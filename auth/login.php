@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $hashed_password)) {
             echo "Password Matched!";
             $_SESSION['admin_id'] = $admin_id;
-            header("Location: dashboard.php");
+            header("Location: ../admin/dashboard.php");
             exit();
         } else {
             echo "Password Not Matched!";
