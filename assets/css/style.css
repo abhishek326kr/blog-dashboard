@@ -1,0 +1,170 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    width: 15%;
+    height: 100vh;
+    background: #17423C;
+    color: white;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.sidebar ul li {
+    padding: 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.sidebar ul li:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    transform: translateX(5px);
+}
+
+.sidebar ul li.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    transform: translateX(5px);
+}
+
+.content {
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: #212529;
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.header-title {
+    font-weight: bold;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.notification-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 15px;
+    position: relative;
+}
+
+.notification-icon {
+    font-size: 20px;
+    color: white;
+}
+
+.notification-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: red;
+    border-radius: 50%;
+}
+
+.user-icon {
+    font-size: 24px;
+    color: white;
+    margin-right: 10px;
+}
+
+.admin-text {
+    font-size: 16px;
+    color: white;
+}
+
+.main {
+    padding: 20px;
+    background-color: #f8f9fa;
+    flex-grow: 1;
+    overflow-y: auto;
+    
+}
+
+.logo img {
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+
+/* dadhsboadr content */
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 50px auto;
+}
+.card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease-in-out;
+    background: white;
+}
+.card:hover {
+    transform: scale(1.05);
+}
+.card-body h5 {
+    font-weight: 600;
+    color: #333;
+}
+.icon-box {
+    font-size: 30px;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+.recent-blogs {
+    margin-top: 40px;
+}
+/* Hover Effect */
+.card:hover .icon-box {
+    transform: rotateY(180deg);
+    transition: 0.5s;
+}
+/* Animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease-in-out forwards;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

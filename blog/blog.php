@@ -1,0 +1,87 @@
+<?php
+// Database connection
+include '../config/db.php';
+
+// Fetch blogs from database
+$sql = "SELECT * FROM blogs";
+
+$blog = $conn->query($sql);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Posts</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f7f9;
+        }
+        .table-container {
+            max-width: 100%;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        thead {
+            background: #007bff;
+            color: white;
+        }
+        tbody tr {
+            transition: 0.3s;
+        }
+        tbody tr:hover {
+            background: rgba(0, 123, 255, 0.1);
+        }
+        td {
+            vertical-align: middle;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="table-container">
+     
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if ($blog->num_rows > 0) {
+                    while($row = $blog->fetch_assoc()) {
+                        echo "<tr>";
+                        echo "<td>" . $row["id"] . "</td>";
+                        echo "<td><strong>" . $row["title"] . "</strong></td>";
+                        echo "<td>" . $row["author"] . "</td>";
+                        echo "<td>" . date("M d, Y", strtotime($row["created_at"])) . "</td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='4' class='text-center'>No results found</td></tr>";
+                }
+                $conn->close();
+                ?>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
