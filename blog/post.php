@@ -23,6 +23,8 @@ if ($result->num_rows === 0) {
 $post = $result->fetch_assoc();
 $stmt->close();
 $conn->close();
+
+
 ?>
 
 <!DOCTYPE html>

@@ -134,6 +134,19 @@ $conn->close();
         }
 
 
+        function ManageProfile() {
+            const [content, setContent] = React.useState('');
+
+            React.useEffect(() => {
+                fetch('manage_user.php')
+                    .then(response => response.text())
+                    .then(data => setContent(data));
+            }, []);
+
+            return <div dangerouslySetInnerHTML={{ __html: content }} />;
+        }
+
+
         function CreatePosts() {
             const [content, setContent] = React.useState('');
 
@@ -181,6 +194,11 @@ $conn->close();
         function Dashboard({ view }) {
             let content;
             switch (view) {
+
+                case 'profile':
+                    content = <ManageProfile />;
+                    break;
+
 
                 case 'post':
                     content = <Post />;

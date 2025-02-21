@@ -6,6 +6,8 @@ include '../config/db.php';
 $sql = "SELECT * FROM blogs";
 
 $blog = $conn->query($sql);
+
+$sn = 1;
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +80,7 @@ $blog = $conn->query($sql);
                 if ($blog->num_rows > 0) {
                     while($row = $blog->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $row["id"] . "</td>";
+                        echo "<td>" . $sn++ . "</td>"; // Serial number
                         echo "<td><a href='../admin/dashboard.php?view=post&id=" . $row['id'] . "' class='post-title-link'>" . $row['title'] . "</a></td>";
                         echo "<td>" . $row["author"] . "</td>";
                         echo "<td>" . date("M d, Y", strtotime($row["created_at"])) . "</td>";

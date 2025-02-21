@@ -5,6 +5,8 @@ include('../config/db.php');
 // Fetch all posts from the database
 $query = "SELECT * FROM blogs";
 $result = mysqli_query($conn, $query);
+
+$sn = 1;
 ?>
 
 <!DOCTYPE html>
@@ -105,7 +107,8 @@ $result = mysqli_query($conn, $query);
             <tbody>
                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
                     <tr>
-                        <td><?php echo $row['id']; ?></td>
+                        <td><?php echo $sn++; ?></td>
+                     
                         <td>
                             <a href="dashboard.php?view=post&id=<?php echo $row['id']; ?>" class="post-title-link">
                                 <?php echo $row['title']; ?>
