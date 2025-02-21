@@ -75,7 +75,7 @@ include '../analytics/analytics.php';
         
         <div class="row">
             <div class="col-md-3 fade-in">
-                <div class="card text-center p-3">
+                <div class="card card_dashboad text-center p-3">
                     <div class="card-body">
                         <i data-feather="file-text" class="icon-box"></i>
                         <h5>Total Blogs</h5>

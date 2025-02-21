@@ -47,13 +47,24 @@ $blog = $conn->query($sql);
             vertical-align: middle;
         }
         
+        .post-title-link {
+            font-weight: bold;
+            color: #17423C;
+            text-decoration: none;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+
+        .post-title-link:hover {
+            color:rgb(1, 87, 75);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
     <div class="table-container">
      
-        <table class="table table-striped table-hover">
+        <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -68,11 +79,13 @@ $blog = $conn->query($sql);
                     while($row = $blog->fetch_assoc()) {
                         echo "<tr>";
                         echo "<td>" . $row["id"] . "</td>";
-                        echo "<td><strong>" . $row["title"] . "</strong></td>";
+                        echo "<td><a href='../admin/dashboard.php?view=post&id=" . $row['id'] . "' class='post-title-link'>" . $row['title'] . "</a></td>";
                         echo "<td>" . $row["author"] . "</td>";
                         echo "<td>" . date("M d, Y", strtotime($row["created_at"])) . "</td>";
                         echo "</tr>";
                     }
+
+                    
                 } else {
                     echo "<tr><td colspan='4' class='text-center'>No results found</td></tr>";
                 }

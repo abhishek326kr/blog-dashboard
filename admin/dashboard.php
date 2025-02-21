@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin_id'])) {
 }
 ?>
 
-<?php 
+<?php
 include '../config/db.php';
 
 $admin_id = $_SESSION['admin_id'];
@@ -28,16 +28,23 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <title>Dashboard - Flexy Markets</title>
+    <script src="../assets/js/react.production.min.js"></script>
+    <script src="../assets/js/react-dom.production.min.js"></script>
+    <script src="../assets/js/babel.min.js"></script>
+
+    <link rel="icon" href="../assets/images/favicon.ico" type="image/png">
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+    <script src="https://cdn.tiny.cloud/1/xdzl24i0eyx673s1ukp65dwkobc1sj0foqjxgtj7fewqh0gc/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
+
+
     <link rel="stylesheet" href="../assets/css/style.css">
 
-    
+
 </head>
 
 <body>
@@ -48,8 +55,7 @@ $conn->close();
             return (
                 <header className="header">
                     <div className="header-title">
-                     
-                                                Hi, <?php echo htmlspecialchars($admin_name); ?>
+                        Hi, <?php echo htmlspecialchars($admin_name); ?>
                     </div>
                     <div className="header-right">
                         <button className="notification-button">
@@ -64,16 +70,39 @@ $conn->close();
         }
 
         function Sidebar({ onSelect, activeView }) {
+            const handleSelect = (view) => {
+                onSelect(view);
+                const url = new URL(window.location);
+                url.searchParams.set('view', view);
+                url.searchParams.delete('id'); // Remove the id parameter when switching views
+                window.history.pushState({}, '', url);
+            };
+
+            React.useEffect(() => {
+                const titles = {
+                    'dashboard': 'Dashboard',
+                    'createPosts': 'Create Post',
+                    'managePosts': 'Manage Posts',
+                    'profile': 'Profile',
+                    'settings': 'Settings',
+                    'post': 'Post'
+                };
+
+                document.title = titles[activeView] || 'Dashboard';
+            }, [activeView]);
+
+
             return (
                 <aside className="sidebar">
                     <div className="logo">
                         <img src="../assets/images/logo_white.png" alt="logo" />
                     </div>
                     <ul>
-                        <li className={activeView === 'dashboard' ? 'active' : ''} onClick={() => onSelect('dashboard')}>Dashboard</li>
-                        <li className={activeView === 'managePosts' ? 'active' : ''} onClick={() => onSelect('managePosts')}>Manage Posts</li>
-                        <li className={activeView === 'profile' ? 'active' : ''} onClick={() => onSelect('profile')}>Profile</li>
-                        <li className={activeView === 'settings' ? 'active' : ''} onClick={() => onSelect('settings')}>Settings</li>
+                        <li className={activeView === 'dashboard' ? 'active' : ''} onClick={() => handleSelect('dashboard')}>Dashboard</li>
+                        <li className={activeView === 'createPosts' ? 'active' : ''} onClick={() => handleSelect('createPosts')}>Create Post</li>
+                        <li className={activeView === 'managePosts' ? 'active' : ''} onClick={() => handleSelect('managePosts')}>Manage Posts</li>
+                        <li className={activeView === 'profile' ? 'active' : ''} onClick={() => handleSelect('profile')}>Profile</li>
+                        <li className={activeView === 'settings' ? 'active' : ''} onClick={() => handleSelect('settings')}>Settings</li>
                         <li onClick={() => window.location.href = '../auth/logout.php'}>Logout</li>
                     </ul>
                 </aside>
@@ -104,9 +133,63 @@ $conn->close();
             return <div dangerouslySetInnerHTML={{ __html: content }} />;
         }
 
+
+        function CreatePosts() {
+            const [content, setContent] = React.useState('');
+
+            React.useEffect(() => {
+                fetch('../blog/create_post.php')
+                    .then(response => response.text())
+                    .then(data => {
+                        setContent(data);
+
+                        // Wait a bit to ensure content is in the DOM, then initialize TinyMCE
+                        setTimeout(() => {
+                            if (window.tinymce) {
+                                window.tinymce.remove(); // Remove any existing TinyMCE instances
+                                window.tinymce.init({
+                                    selector: '#content',
+                                    plugins: 'advlist autolink lists link image charmap preview hr anchor pagebreak code paste',
+                                    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview code',
+                                    paste_data_images: false,
+                                    images_upload_url: '../blog/upload.php',
+                                    automatic_uploads: true,
+                                    height: 400
+                                });
+                            }
+                        }, 500);
+                    });
+            }, []);
+
+            return <div dangerouslySetInnerHTML={{ __html: content }} />;
+        }
+
+        function Post() {
+            const [content, setContent] = React.useState('');
+
+            React.useEffect(() => {
+                const params = new URLSearchParams(window.location.search);
+                const postId = params.get('id');
+                fetch(`../blog/post.php?id=${postId}`)
+                    .then(response => response.text())
+                    .then(data => setContent(data));
+            }, []);
+
+            return <div dangerouslySetInnerHTML={{ __html: content }} />;
+        }
+
         function Dashboard({ view }) {
             let content;
             switch (view) {
+
+                case 'post':
+                    content = <Post />;
+                    break;
+
+                case 'createPosts':
+                    content = <CreatePosts />;
+                    break;
+
                 case 'managePosts':
                     content = <ManagePosts />;
                     break;
@@ -126,7 +209,10 @@ $conn->close();
         }
 
         function App() {
-            const [view, setView] = React.useState('dashboard');
+            const [view, setView] = React.useState(() => {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('view') || 'dashboard';
+            });
 
             return (
                 <div style={{ display: "flex" }}>
@@ -138,7 +224,9 @@ $conn->close();
 
         ReactDOM.render(<App />, document.getElementById("root"));
 
-      
+
+
+
     </script>
 </body>
 

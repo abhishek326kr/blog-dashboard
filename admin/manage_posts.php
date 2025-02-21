@@ -9,6 +9,7 @@ $result = mysqli_query($conn, $query);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +21,7 @@ $result = mysqli_query($conn, $query);
             background-color: #f8f9fa;
             font-family: 'Arial', sans-serif;
         }
+
         .container {
             margin-top: 50px;
             max-width: 80%;
@@ -28,41 +30,63 @@ $result = mysqli_query($conn, $query);
             border-radius: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .header_card {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
+
         .table {
             border-radius: 10px;
             overflow: hidden;
         }
-        th, td {
-            text-align: center;
+
+        th,
+        td {
+            text-align: left;
             vertical-align: middle;
         }
+
         th {
             background-color: #007bff;
             color: white;
         }
+
         .btn {
             padding: 5px 12px;
             font-size: 14px;
         }
+
         .btn-warning {
             background-color: #ffc107;
             border: none;
         }
+
         .btn-danger {
             background-color: #dc3545;
             border: none;
         }
+
         .btn:hover {
             opacity: 0.8;
         }
+
+        .post-title-link {
+            font-weight: bold;
+            color: #17423C;
+            text-decoration: none;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+
+        .post-title-link:hover {
+            color:rgb(1, 87, 75);
+            text-decoration: underline;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header_card">
@@ -79,19 +103,28 @@ $result = mysqli_query($conn, $query);
                 </tr>
             </thead>
             <tbody>
-                <?php while($row = mysqli_fetch_assoc($result)): ?>
-                <tr>
-                    <td><?php echo $row['id']; ?></td>
-                    <td><?php echo $row['title']; ?></td>
-                    <td><?php echo $row['author']; ?></td>
-                    <td>
-                        <a href="../blog/edit_post.php?id=<?php echo $row['id']; ?>" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
-                        <a href="delete_post.php?id=<?php echo $row['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this post?');"><i class="fas fa-trash"></i> Delete</a>
-                    </td>
-                </tr>
+                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <tr>
+                        <td><?php echo $row['id']; ?></td>
+                        <td>
+                            <a href="dashboard.php?view=post&id=<?php echo $row['id']; ?>" class="post-title-link">
+                                <?php echo $row['title']; ?>
+                            </a>
+                        </td>
+                    
+                        <td><?php echo $row['author']; ?></td>
+                        <td>
+                            <a href="../blog/edit_post.php?id=<?php echo $row['id']; ?>" class="btn btn-warning"><i
+                                    class="fas fa-edit"></i> Edit</a>
+                            <a href="../blog/delete_post.php?id=<?php echo $row['id']; ?>" class="btn btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this post?');"><i
+                                    class="fas fa-trash"></i> Delete</a>
+                        </td>
+                    </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
     </div>
 </body>
+
 </html>

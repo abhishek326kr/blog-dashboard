@@ -1,28 +1,33 @@
 <?php
 session_start();
-include 'config/db.php';
+require_once '../config/db.php';
 
-// Check if user is logged in
-if (!isset($_SESSION["user_id"])) {
-    header("Location: login.php");
-    exit();
+// Debugging: ID print karne ke liye
+if (isset($_GET["id"])) {
+    echo "Post ID received: " . $_GET["id"];
+} else {
+    echo "No ID received!";
 }
 
-// Check if post ID is provided
-if (isset($_GET["id"])) {
-    $id = $_GET["id"];
+// Check if post ID is provided and valid
+if (isset($_GET["id"]) && is_numeric($_GET["id"])) {
+    $id = intval($_GET["id"]); // Ensure ID is integer
 
-    // Delete post from database
-    $sql = "DELETE FROM posts WHERE id = ?";
+    // Prepare SQL statement
+    $sql = "DELETE FROM blogs WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
 
-    if ($stmt->execute()) {
-        echo "Post deleted successfully! <a href='manage_posts.php'>Back to Posts</a>";
+    if ($stmt) {
+        $stmt->bind_param("i", $id);
+        if ($stmt->execute()) {
+            header("Location: ../admin/dashboard.php?view=managePosts");
+            exit();
+        } else {
+            echo "Error deleting post: {$stmt->error}";
+        }
     } else {
-        echo "Error deleting post: " . $conn->error;
+        echo "Error in preparing statement: {$conn->error}";
     }
 } else {
     echo "Invalid post ID!";
 }
-?>

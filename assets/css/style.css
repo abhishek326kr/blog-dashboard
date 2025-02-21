@@ -46,9 +46,9 @@
 }
 
 .header {
-    background: #212529;
+    background: #ffffff;
     backdrop-filter: blur(10px);
-    color: white;
+    color: #17423C;
     padding: 20px;
     display: flex;
     justify-content: space-between;
@@ -80,7 +80,7 @@
 
 .notification-icon {
     font-size: 20px;
-    color: white;
+    color: #17423C;
 }
 
 .notification-button::after {
@@ -96,13 +96,13 @@
 
 .user-icon {
     font-size: 24px;
-    color: white;
+    color: #17423C;
     margin-right: 10px;
 }
 
 .admin-text {
     font-size: 16px;
-    color: white;
+    color: #17423C;
 }
 
 .main {
@@ -125,14 +125,14 @@
     max-width: 1200px;
     margin: 50px auto;
 }
-.card {
+.card_dashboad {
     border-radius: 12px;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: 0.3s ease-in-out;
     background: white;
 }
-.card:hover {
+.card_dashboad:hover {
     transform: scale(1.05);
 }
 .card-body h5 {

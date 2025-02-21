@@ -8,11 +8,11 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 }
 
 $blog_id = intval($_GET['id']);
-$title = $content = $author = "";
+$title = $content = $author = $featured_image = "";
 $title_err = $content_err = $author_err = "";
 
 // Fetch existing blog details
-$sql = "SELECT title, content, author FROM blogs WHERE id = ?";
+$sql = "SELECT title, content, author, featured_image FROM blogs WHERE id = ?";
 if ($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $blog_id);
     if (mysqli_stmt_execute($stmt)) {
@@ -22,6 +22,7 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
             $title = $row['title'];
             $content = $row['content'];
             $author = $row['author'];
+            $featured_image = $row['featured_image'];
         } else {
             die("Blog not found.");
         }
@@ -51,13 +52,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $author = mysqli_real_escape_string($conn, trim($_POST["author"]));
     }
 
+    // Handle file upload
+    if (!empty($_FILES['featured_image']['name'])) {
+        $target_dir = "../uploads/";
+        $target_file = $target_dir . basename($_FILES["featured_image"]["name"]);
+        if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $target_file)) {
+            $featured_image = $target_file;
+        } else {
+            echo "<div class='alert alert-danger'>Failed to upload image.</div>";
+        }
+    }
+
     // Update blog if no errors
     if (empty($title_err) && empty($content_err) && empty($author_err)) {
-        $sql = "UPDATE blogs SET title = ?, content = ?, author = ? WHERE id = ?";
+        $sql = "UPDATE blogs SET title = ?, content = ?, author = ?, featured_image = ? WHERE id = ?";
         if ($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "sssi", $title, $content, $author, $blog_id);
+            mysqli_stmt_bind_param($stmt, "ssssi", $title, $content, $author, $featured_image, $blog_id);
             if (mysqli_stmt_execute($stmt)) {
-                header("location: ../admin/dashboard.php");
+                header("location: ../admin/dashboard.php?view=managePosts");
                 exit();
             } else {
                 echo "<div class='alert alert-danger'>Something went wrong. Please try again later.</div>";
@@ -92,7 +104,7 @@ mysqli_close($conn);
             <div class="col-md-8">
                 <div class="card">
                     <h2 class="text-center mb-4">Edit Blog Post</h2>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $blog_id; ?>" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $blog_id; ?>" method="post" enctype="multipart/form-data">
                         <div class="form-group mb-3">
                             <label>Title</label>
                             <input type="text" name="title" class="form-control <?php echo (!empty($title_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($title); ?>">
@@ -108,9 +120,16 @@ mysqli_close($conn);
                             <input type="text" name="author" class="form-control <?php echo (!empty($author_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($author); ?>">
                             <div class="invalid-feedback"><?php echo $author_err; ?></div>
                         </div>
+                        <div class="form-group mb-3">
+                            <label>Featured Image</label>
+                            <input type="file" name="featured_image" class="form-control">
+                            <?php if (!empty($featured_image)): ?>
+                                <img src="<?php echo $featured_image; ?>" alt="Featured Image" class="mt-2" style="max-width: 100px;">
+                            <?php endif; ?>
+                        </div>
                         <div class="form-group text-center">
                             <button type="submit" class="btn btn-warning">✏️ Update</button>
-                            <a href="../admin/dashboard.php" class="btn btn-secondary">Cancel</a>
+                            <a href="../admin/dashboard.php?view=managePosts" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>
