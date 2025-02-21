@@ -1,4 +1,4 @@
-# Blogging Dashboard
+# Flexy Markets Blogging Dashboard
 
 A **powerful and efficient** blogging dashboard built using **Core PHP** for backend and **React (via CDN)** for frontend rendering. This dashboard is designed to manage blog posts, SEO settings, user authentication, media uploads, and more!
 
