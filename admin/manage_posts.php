@@ -20,17 +20,14 @@ $sn = 1;
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f4f7f9;
             font-family: 'Arial', sans-serif;
         }
 
         .container {
-            margin-top: 50px;
-            max-width: 80%;
+            max-width: 100%;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+          
         }
 
         .header_card {
@@ -117,7 +114,7 @@ $sn = 1;
                     
                         <td><?php echo $row['author']; ?></td>
                         <td>
-                            <a href="../blog/edit_post.php?id=<?php echo $row['id']; ?>" class="btn btn-warning"><i
+                            <a href="dashboard.php?view=editPost&id=<?php echo $row['id']; ?>" class="btn btn-warning"><i
                                     class="fas fa-edit"></i> Edit</a>
                             <a href="../blog/delete_post.php?id=<?php echo $row['id']; ?>" class="btn btn-danger"
                                 onclick="return confirm('Are you sure you want to delete this post?');"><i
@@ -125,6 +122,8 @@ $sn = 1;
                         </td>
                     </tr>
                 <?php endwhile; ?>
+
+                
             </tbody>
         </table>
     </div>

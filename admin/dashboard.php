@@ -191,6 +191,44 @@ $conn->close();
             return <div dangerouslySetInnerHTML={{ __html: content }} />;
         }
 
+
+        function EditPost() {
+            const [content, setContent] = React.useState('');
+
+            React.useEffect(() => {
+                const params = new URLSearchParams(window.location.search);
+                const postId = params.get('id');
+
+                fetch(`../blog/edit_post.php?id=${postId}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        setContent(data);
+                    });
+            }, []);
+
+            React.useEffect(() => {
+                if (content) {
+                    setTimeout(() => {
+                            if (window.tinymce) {
+                                window.tinymce.remove(); // Remove any existing TinyMCE instances
+                                window.tinymce.init({
+                                    selector: '#content',
+                                    plugins: 'advlist autolink lists link image charmap preview hr anchor pagebreak code paste',
+                                    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview code',
+                                    paste_data_images: false,
+                                    images_upload_url: '../blog/upload.php',
+                                    automatic_uploads: true,
+                                    height: 400
+                                });
+                            }
+                        }, 500);
+                }
+            }, [content]); // Ye ensure karega ki TinyMCE tab initialize ho jab content update ho
+
+            return <div dangerouslySetInnerHTML={{ __html: content }} />;
+        }
+
+
         function Dashboard({ view }) {
             let content;
             switch (view) {
@@ -199,6 +237,11 @@ $conn->close();
                     content = <ManageProfile />;
                     break;
 
+
+
+                case 'editPost':
+                    content = <EditPost />;
+                    break;
 
                 case 'post':
                     content = <Post />;

@@ -13,6 +13,8 @@
     padding: 20px;
     position: sticky;
     top: 0;
+    /* margin: 10px;
+    border-radius: 10px; */
 }
 
 .sidebar ul {
@@ -59,6 +61,8 @@
     position: sticky;
     top: 0;
     z-index: 5;
+    /* margin: 10px;
+    border-radius: 10px; */
 }
 
 .header-title {
@@ -107,9 +111,11 @@
 
 .main {
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     flex-grow: 1;
     overflow-y: auto;
+    margin: 10px;
+    border-radius: 10px;
     
 }
 

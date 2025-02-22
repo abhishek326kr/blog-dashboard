@@ -83,20 +83,44 @@ mysqli_close($conn);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Blog Post</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.tiny.cloud/1/xdzl24i0eyx673s1ukp65dwkobc1sj0foqjxgtj7fewqh0gc/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/xdzl24i0eyx673s1ukp65dwkobc1sj0foqjxgtj7fewqh0gc/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <style>
-        body { background-color: #f4f7f9; }
-        .card { border-radius: 10px; padding: 20px; background: white; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); }
-        .dark-mode { background-color: #121212; color: #f8f9fa; }
-        .dark-mode .card { background: #1e1e1e; color: #ffffff; }
-        .toggle-dark { position: fixed; top: 20px; right: 20px; }
+        body {
+            background-color: #f4f7f9;
+        }
+
+        .card {
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+
+        .dark-mode .card {
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .toggle-dark {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
     </style>
 </head>
+
 <body>
     <button class="btn btn-dark toggle-dark" onclick="toggleDarkMode()">🌙 Dark Mode</button>
     <div class="container mt-5">
@@ -104,29 +128,42 @@ mysqli_close($conn);
             <div class="col-md-8">
                 <div class="card">
                     <h2 class="text-center mb-4">Edit Blog Post</h2>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $blog_id; ?>" method="post" enctype="multipart/form-data">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $blog_id; ?>"
+                        method="post" enctype="multipart/form-data">
                         <div class="form-group mb-3">
                             <label>Title</label>
-                            <input type="text" name="title" class="form-control <?php echo (!empty($title_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($title); ?>">
+                            <input type="text" name="title"
+                                class="form-control <?php echo (!empty($title_err)) ? 'is-invalid' : ''; ?>"
+                                value="<?php echo htmlspecialchars($title); ?>">
                             <div class="invalid-feedback"><?php echo $title_err; ?></div>
                         </div>
                         <div class="form-group mb-3">
                             <label>Content</label>
-                            <textarea name="content" id="content" class="form-control"><?php echo htmlspecialchars($content); ?></textarea>
+                            <textarea name="content" id="content"
+                                class="form-control"><?php echo htmlspecialchars($content); ?></textarea>
                             <div class="invalid-feedback"><?php echo $content_err; ?></div>
                         </div>
                         <div class="form-group mb-3">
                             <label>Author</label>
-                            <input type="text" name="author" class="form-control <?php echo (!empty($author_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($author); ?>">
+                            <input type="text" name="author"
+                                class="form-control <?php echo (!empty($author_err)) ? 'is-invalid' : ''; ?>"
+                                value="<?php echo htmlspecialchars($author); ?>">
                             <div class="invalid-feedback"><?php echo $author_err; ?></div>
                         </div>
                         <div class="form-group mb-3">
                             <label>Featured Image</label>
                             <input type="file" name="featured_image" class="form-control">
+
                             <?php if (!empty($featured_image)): ?>
-                                <img src="<?php echo $featured_image; ?>" alt="Featured Image" class="mt-2" style="max-width: 100px;">
+                                <?php
+                                // Ensure correct path
+                                $imagePath = "../uploads/" . basename($featured_image);
+                                ?>
+                                <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Featured Image" class="mt-2"
+                                    style="max-width: 100px;">
                             <?php endif; ?>
                         </div>
+
                         <div class="form-group text-center">
                             <button type="submit" class="btn btn-warning">✏️ Update</button>
                             <a href="../admin/dashboard.php?view=managePosts" class="btn btn-secondary">Cancel</a>
@@ -141,4 +178,5 @@ mysqli_close($conn);
         function toggleDarkMode() { document.body.classList.toggle("dark-mode"); }
     </script>
 </body>
+
 </html>
