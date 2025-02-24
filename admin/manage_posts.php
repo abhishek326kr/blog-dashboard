@@ -19,15 +19,48 @@ $sn = 1;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
     <style>
-        body {
-            background-color: #f4f7f9;
-            font-family: 'Arial', sans-serif;
+  
+
+        .dark-mode {
+            background-color: #121212;
+            color: #f8f9fa;
         }
+
+      
+
+        .toggle-dark {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
+
+
+body.dark-mode .table {
+    background-color: #2a2a2a;
+}
+
+body.dark-mode .table th {
+    background-color: #444;
+    color: #f8f9fa;
+}
+
+body.dark-mode .table tbody tr {
+    background-color: #333;
+}
+
+body.dark-mode .table tbody tr:hover {
+    background-color: #444;
+}
+
+        
 
         .container {
             max-width: 100%;
             background: white;
-          
+           padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         .header_card {
@@ -90,7 +123,7 @@ $sn = 1;
     <div class="container">
         <div class="header_card">
             <h2><i class="fas fa-newspaper"></i> Manage Posts</h2>
-            <a href="../blog/create_post.php" class="btn btn-success"> <i class="fas fa-plus"></i> Create New Post</a>
+            <a href="dashboard.php?view=createPosts" class="btn btn-success"> <i class="fas fa-plus"></i> Create New Post</a>
         </div>
         <table class="table table-bordered table-hover">
             <thead>

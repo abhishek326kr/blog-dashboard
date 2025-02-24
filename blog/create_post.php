@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         referrerpolicy="origin"></script>
     <style>
         body {
-            background-color: #f4f7f9;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
         }
 
         .card {
@@ -134,8 +134,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 
-<body onload="checkDarkMode()">
-    <button class="btn btn-dark toggle-dark" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+<body>
+
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">

@@ -52,18 +52,97 @@ $conn->close();
 
     <script type="text/babel">
         function Header() {
+            const [searchTerm, setSearchTerm] = React.useState("");
+            const [searchResults, setSearchResults] = React.useState([]);
+            const [darkMode, setDarkMode] = React.useState(false);
+            const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+            const [showSearchResults, setShowSearchResults] = React.useState(false);
+
+            React.useEffect(() => {
+                document.body.className = darkMode ? "dark-mode" : "";
+            }, [darkMode]);
+
+            // Function to fetch search results from backend
+            const fetchSearchResults = async (query) => {
+                if (!query.trim()) {
+                    setSearchResults([]);
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost/blog-dashboard/api/search.php?query=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+
+                    if (data.results) {
+                        setSearchResults(data.results);
+                    } else {
+                        setSearchResults([]); // No results
+                    }
+                } catch (error) {
+                    console.error("Error fetching search results:", error);
+                    setSearchResults([]); // Error case
+                }
+            };
+
+
+            // Debounce search to avoid excessive API calls
+            React.useEffect(() => {
+                const delayDebounce = setTimeout(() => {
+                    if (searchTerm) {
+                        fetchSearchResults(searchTerm);
+                    } else {
+                        setSearchResults([]);
+                    }
+                }, 300); // 300ms delay to optimize API calls
+
+                return () => clearTimeout(delayDebounce);
+            }, [searchTerm]);
+
             return (
                 <header className="header">
-                    <div className="header-title">
-                        Hi, <?php echo htmlspecialchars($admin_name); ?>
+                    <div className="search-container">
+                        <input
+                            type="text"
+                            className="search-bar"
+                            placeholder="Search blogs..."
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setShowSearchResults(e.target.value.length > 0);
+                            }}
+                        />
+                        <div className={`search-results ${showSearchResults ? "active" : ""}`}>
+                            {searchTerm && <p>Showing results for "{searchTerm}"</p>}
+                            {searchResults.length > 0 ? (
+                                <ul>
+                                    {searchResults.map((result) => (
+                                        <li key={result.id}>
+                                            <a href={`/blog/${result.id}`}>{result.title}</a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                searchTerm && <p>No results found.</p>
+                            )}
+                        </div>
                     </div>
+
                     <div className="header-right">
-                        <button className="notification-button">
-                            <i className="fas fa-bell notification-icon"></i>
+                        <i className="fas fa-bell notif-bell"></i>
+
+                        <button className="btn" onClick={() => setDarkMode(!darkMode)}>
+                            {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
                         </button>
 
-                        <i className="fas fa-user-circle user-icon"></i>
-                        <span className="admin-text">Admin</span>
+                        <button className="btn" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+                            <i className="fas fa-user-circle user-icon"></i> Hi <span id="admin-name"></span>
+                        </button>
+
+                        <div className={`profile-menu ${showProfileMenu ? "active" : ""}`}>
+                            <p><a href="dashboard.php?view=profile">Profile</a></p>
+                            <p><a href="dashboard.php?view=settings">Settings</a></p>
+                            <p><a href="logout.php">Logout</a></p>
+                        </div>
                     </div>
                 </header>
             );
@@ -103,6 +182,7 @@ $conn->close();
                         <li className={activeView === 'managePosts' ? 'active' : ''} onClick={() => handleSelect('managePosts')}>Manage Posts</li>
                         <li className={activeView === 'profile' ? 'active' : ''} onClick={() => handleSelect('profile')}>Profile</li>
                         <li className={activeView === 'settings' ? 'active' : ''} onClick={() => handleSelect('settings')}>Settings</li>
+                        <li className={activeView === 'leaderboard' ? 'active' : ''} onClick={() => handleSelect('leaderboard')}>Leaderboard</li>
                         <li onClick={() => window.location.href = '../auth/logout.php'}>Logout</li>
                     </ul>
                 </aside>
@@ -209,19 +289,19 @@ $conn->close();
             React.useEffect(() => {
                 if (content) {
                     setTimeout(() => {
-                            if (window.tinymce) {
-                                window.tinymce.remove(); // Remove any existing TinyMCE instances
-                                window.tinymce.init({
-                                    selector: '#content',
-                                    plugins: 'advlist autolink lists link image charmap preview hr anchor pagebreak code paste',
-                                    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview code',
-                                    paste_data_images: false,
-                                    images_upload_url: '../blog/upload.php',
-                                    automatic_uploads: true,
-                                    height: 400
-                                });
-                            }
-                        }, 500);
+                        if (window.tinymce) {
+                            window.tinymce.remove(); // Remove any existing TinyMCE instances
+                            window.tinymce.init({
+                                selector: '#content',
+                                plugins: 'advlist autolink lists link image charmap preview hr anchor pagebreak code paste',
+                                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview code',
+                                paste_data_images: false,
+                                images_upload_url: '../blog/upload.php',
+                                automatic_uploads: true,
+                                height: 400
+                            });
+                        }
+                    }, 500);
                 }
             }, [content]); // Ye ensure karega ki TinyMCE tab initialize ho jab content update ho
 
@@ -229,9 +309,52 @@ $conn->close();
         }
 
 
+        function Leaderboard() {
+            const [data, setData] = React.useState({ trendingBlogs: [], topUsers: [] });
+
+            React.useEffect(() => {
+                fetch("get_leaderboard.php")
+                    .then(response => response.json())
+                    .then(data => setData(data));
+            }, []);
+
+            return (
+                <div className="leaderboard">
+                    <h2>🏆 Leaderboard</h2>
+
+                    <div className="leaderboard-section">
+                        <h3>🔥 Trending Blogs</h3>
+                        <ul>
+                            {data.trendingBlogs.map((blog, index) => (
+                                <li key={index}>{index + 1}. {blog.title} - {blog.views} Views</li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="leaderboard-section">
+                        <h3>📝 Top Contributors</h3>
+                        <ul>
+                            {data.topUsers.map((user, index) => (
+                                <li key={index}>{index + 1}. {user.author} - {user.posts} Posts</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+
+
         function Dashboard({ view }) {
             let content;
             switch (view) {
+
+                case 'leaderboard':
+                    content = <Leaderboard />;
+                    break;
+
+                case 'settings':
+                    content = <div>Settings</div>;
+                    break;
 
                 case 'profile':
                     content = <ManageProfile />;
@@ -284,6 +407,9 @@ $conn->close();
         }
 
         ReactDOM.render(<App />, document.getElementById("root"));
+
+        // Set the admin name after rendering
+        document.getElementById("admin-name").textContent = "<?php echo $admin_name; ?>";
 
 
 

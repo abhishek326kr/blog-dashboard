@@ -22,13 +22,12 @@ $user = mysqli_fetch_assoc($result);
     <style>
 
         body {
-            background: #f4f7f9;
-        }
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);        }
        
         .profile-container {
             max-width: 100%;
             margin: 20px auto;
-            background: rgba(255, 255, 255, 0.1);
+            background: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;

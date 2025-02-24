@@ -3,6 +3,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
+    
 }
 
 .sidebar {
@@ -19,11 +20,11 @@
 
 .sidebar ul {
     list-style: none;
-    padding: 10px 0;
+    padding: 10px 0 !important;
 }
 
 .sidebar ul li {
-    padding: 10px;
+    padding: 10px !important;
     margin-bottom: 5px;
     cursor: pointer;
     transition: background 0.3s, transform 0.3s;
@@ -45,73 +46,142 @@
     width: 85%;
     display: flex;
     flex-direction: column;
+
 }
 
 .header {
-    background: #ffffff;
-    backdrop-filter: blur(10px);
-    color: #17423C;
-    padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
-    z-index: 5;
-    /* margin: 10px;
-    border-radius: 10px; */
+    z-index: 1000;
 }
-
-.header-title {
-    font-weight: bold;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-}
-
-.notification-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-right: 15px;
+.search-container {
     position: relative;
 }
-
-.notification-icon {
-    font-size: 20px;
-    color: #17423C;
+.search-bar {
+    width: 200px;
+    padding: 10px;
+    border: none;
+    border-radius: 25px;
+    transition: 0.3s ease;
+    outline: none;
 }
-
-.notification-button::after {
-    content: '';
+.search-bar:focus {
+    width: 300px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+.search-results {
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 8px;
-    height: 8px;
-    background: red;
-    border-radius: 50%;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+.search-results.active {
+    display: block;
 }
 
-.user-icon {
-    font-size: 24px;
-    color: #17423C;
-    margin-right: 10px;
+.search-results {
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 10px;
+    margin-top: 5px;
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+
+}
+.dark-mode {
+    background: #222;
+    color: white;
 }
 
-.admin-text {
+.dark-mode .card {
+    background: #222 !important;
+    color: white;
+}
+
+.dark-mode .card h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode .card h5, .dark-mode h6 {
+    color: white;
+}
+
+.dark-mode table {
+    background-color: #121212;
+    color: #f8f9fa;
+}
+
+.dark-mode .btn {
+    color: white;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode table {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode th, body.dark-mode td {
+    border: 1px solid #333;
+}
+
+body.dark-mode input, body.dark-mode select {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .header {
+    background-color: #222;
+}
+
+
+.btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
     font-size: 16px;
-    color: #17423C;
+    padding: 5px 10px;
+}
+.profile-menu {
+    position: absolute;
+    right: 10px;
+    top: 50px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    padding: 20px;
+}
+
+.profile-menu a {
+    display: block;
+ 
+    color: black;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+.profile-menu.active {
+    display: block;
+}
+.notif-bell {
+    font-size: 18px;
+    margin-right: 10px;
+    cursor: pointer;
 }
 
 .main {
     padding: 20px;
-    background-color: #ffffff;
     flex-grow: 1;
     overflow-y: auto;
     margin: 10px;
@@ -174,3 +244,50 @@
         transform: translateY(0);
     }
 }
+
+
+/* Leadetr */
+
+.leaderboard {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 100%;
+}
+
+.leaderboard h2 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.leaderboard-section {
+    margin-top: 15px;
+}
+
+.leaderboard-section h3 {
+    font-size: 18px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.leaderboard ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem !important;
+}
+
+.leaderboard li {
+    font-size: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.leaderboard li span {
+    float: right;
+    font-weight: bold;
+}
+

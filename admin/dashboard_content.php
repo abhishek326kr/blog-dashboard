@@ -23,6 +23,21 @@ include '../analytics/analytics.php';
             max-width: 1200px;
             margin: 50px auto;
         }
+
+        
+
+        .dark-mode {
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+
+      
+
+        .toggle-dark {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
         .card {
             border-radius: 20px !important;
             border: none;

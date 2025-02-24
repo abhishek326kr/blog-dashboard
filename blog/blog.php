@@ -21,10 +21,25 @@ $sn = 1;
         body {
             background-color: #f4f7f9;
         }
+
+        .dark-mode {
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+
+      
+
+      
+
+        .toggle-dark {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
         .table-container {
             max-width: 100%;
             margin: 40px auto;
-            background: white;
+    
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
