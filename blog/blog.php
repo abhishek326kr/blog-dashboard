@@ -18,18 +18,27 @@ $sn = 1;
     <title>Blog Posts</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body {
-            background-color: #f4f7f9;
-        }
+        
 
         .dark-mode {
-            background-color: #121212;
+            background-color:rgb(54, 54, 54);
             color: #f8f9fa;
         }
 
-      
+        .dark-mode a {
+            color: #f8f9fa;
+        }
 
-      
+        .dark-mode .table-container {
+            background-color: #222;
+            color: #f8f9fa;
+        }
+
+        .dark-mode .table>:not(caption)>*>* {
+            border-color: #444;
+            background: #222;
+            color: white;
+        }
 
         .toggle-dark {
             position: fixed;
@@ -39,7 +48,7 @@ $sn = 1;
         .table-container {
             max-width: 100%;
             margin: 40px auto;
-    
+            background: white;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -50,8 +59,9 @@ $sn = 1;
             overflow: hidden;
             border-radius: 10px;
         }
+
+      
         thead {
-            background: #007bff;
             color: white;
         }
         tbody tr {

@@ -78,27 +78,26 @@
 }
 .search-results {
     position: absolute;
-    top: 40px;
+    top: 45px;
     left: 0;
     width: 100%;
     background: white;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     display: none;
+    padding: 10px 15px;
 }
 .search-results.active {
     display: block;
 }
 
-.search-results {
-    max-height: 300px;
-    overflow-y: auto;
-    border-radius: 10px;
-    margin-top: 5px;
-    padding: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+.dark-mode .search-results {
+    background: #222;
+    color: white;
 
 }
+
+
 .dark-mode {
     background: #222;
     color: white;

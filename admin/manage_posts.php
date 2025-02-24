@@ -19,14 +19,32 @@ $sn = 1;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
     <style>
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            font-family: 'Arial', sans-serif;
+        }
   
 
-        .dark-mode {
-            background-color: #121212;
+  .dark-mode {
+            background-color:rgb(54, 54, 54);
             color: #f8f9fa;
         }
 
-      
+        .dark-mode a {
+            color: #f8f9fa;
+        }
+
+        .dark-mode .container {
+            background-color: #222;
+            color: #f8f9fa;
+        }
+
+        .dark-mode .table>:not(caption)>*>* {
+            border-color: #444;
+            background: #222;
+            color: white;
+        }
 
         .toggle-dark {
             position: fixed;
@@ -34,30 +52,11 @@ $sn = 1;
             right: 20px;
         }
 
-
-
-body.dark-mode .table {
-    background-color: #2a2a2a;
-}
-
-body.dark-mode .table th {
-    background-color: #444;
-    color: #f8f9fa;
-}
-
-body.dark-mode .table tbody tr {
-    background-color: #333;
-}
-
-body.dark-mode .table tbody tr:hover {
-    background-color: #444;
-}
-
         
 
         .container {
-            max-width: 100%;
             background: white;
+            max-width: 100%;
            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);

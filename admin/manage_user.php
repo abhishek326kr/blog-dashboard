@@ -13,6 +13,7 @@ $user = mysqli_fetch_assoc($result);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,10 +21,32 @@ $user = mysqli_fetch_assoc($result);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <style>
-
         body {
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);        }
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        }
+
+        .dark-mode {
+            background-color: rgb(54, 54, 54);
+            color: #f8f9fa;
+        }
+
+        .dark-mode a {
+            color: #f8f9fa;
+        }
+
+        .dark-mode .profile-container {
+            background-color: #222;
+            color: #f8f9fa;
+        }
+
        
+
+        .toggle-dark {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
         .profile-container {
             max-width: 100%;
             margin: 20px auto;
@@ -35,6 +58,7 @@ $user = mysqli_fetch_assoc($result);
 
             display: flex;
         }
+
         .profile-pic {
             width: 120px;
             height: 120px;
@@ -48,7 +72,7 @@ $user = mysqli_fetch_assoc($result);
             margin-left: 20px;
             text-align: left;
         }
-        
+
         .btn-edit {
             margin-top: 10px;
             background-color: white;
@@ -57,22 +81,25 @@ $user = mysqli_fetch_assoc($result);
         }
     </style>
 </head>
+
 <body>
 
-<div class="profile-container">
-  <div class="pfp">
-  <img src="https://files.mastodonapp.uk/cache/accounts/avatars/109/896/082/068/480/122/original/1ff7a65dec79f6ea.jpg" class="profile-pic" alt="Profile Picture">
+    <div class="profile-container">
+        <div class="pfp">
+            <img src="https://files.mastodonapp.uk/cache/accounts/avatars/109/896/082/068/480/122/original/1ff7a65dec79f6ea.jpg"
+                class="profile-pic" alt="Profile Picture">
 
-  </div>    
+        </div>
 
-  <div class="profile_details">
-  <h2><?php echo htmlspecialchars($user['name']); ?></h2>
-    <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?></p>
+        <div class="profile_details">
+            <h2><?php echo htmlspecialchars($user['name']); ?></h2>
+            <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?></p>
 
-    <button class="btn btn-edit btn-sm">Edit Profile</button>
-  </div>
-    
-</div>
+            <button class="btn btn-edit btn-sm">Edit Profile</button>
+        </div>
+
+    </div>
 
 </body>
+
 </html>

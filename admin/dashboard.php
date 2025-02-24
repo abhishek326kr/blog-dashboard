@@ -54,49 +54,27 @@ $conn->close();
         function Header() {
             const [searchTerm, setSearchTerm] = React.useState("");
             const [searchResults, setSearchResults] = React.useState([]);
-            const [darkMode, setDarkMode] = React.useState(false);
             const [showProfileMenu, setShowProfileMenu] = React.useState(false);
             const [showSearchResults, setShowSearchResults] = React.useState(false);
 
+            // Load user preference from localStorage
+            const [darkMode, setDarkMode] = React.useState(() => {
+                const savedMode = localStorage.getItem("darkMode");
+                if (savedMode !== null) {
+                    return savedMode === "true";  // User preference
+                }
+                return false; // Default to light mode if no preference
+            });
+
+            // Apply dark mode to body
             React.useEffect(() => {
-                document.body.className = darkMode ? "dark-mode" : "";
+                if (darkMode) {
+                    document.body.classList.add("dark-mode");
+                } else {
+                    document.body.classList.remove("dark-mode");
+                }
+                localStorage.setItem("darkMode", darkMode);
             }, [darkMode]);
-
-            // Function to fetch search results from backend
-            const fetchSearchResults = async (query) => {
-                if (!query.trim()) {
-                    setSearchResults([]);
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`http://localhost/blog-dashboard/api/search.php?query=${encodeURIComponent(query)}`);
-                    const data = await response.json();
-
-                    if (data.results) {
-                        setSearchResults(data.results);
-                    } else {
-                        setSearchResults([]); // No results
-                    }
-                } catch (error) {
-                    console.error("Error fetching search results:", error);
-                    setSearchResults([]); // Error case
-                }
-            };
-
-
-            // Debounce search to avoid excessive API calls
-            React.useEffect(() => {
-                const delayDebounce = setTimeout(() => {
-                    if (searchTerm) {
-                        fetchSearchResults(searchTerm);
-                    } else {
-                        setSearchResults([]);
-                    }
-                }, 300); // 300ms delay to optimize API calls
-
-                return () => clearTimeout(delayDebounce);
-            }, [searchTerm]);
 
             return (
                 <header className="header">
@@ -130,6 +108,7 @@ $conn->close();
                     <div className="header-right">
                         <i className="fas fa-bell notif-bell"></i>
 
+                        {/* Toggle Button */}
                         <button className="btn" onClick={() => setDarkMode(!darkMode)}>
                             {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
                         </button>
@@ -147,6 +126,9 @@ $conn->close();
                 </header>
             );
         }
+
+
+
 
         function Sidebar({ onSelect, activeView }) {
             const handleSelect = (view) => {
