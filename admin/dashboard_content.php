@@ -127,6 +127,45 @@ include '../analytics/analytics.php';
             </div>
         </div>
 
+        <div class="row mt-5">
+            <div class="col-md-3 fade-in">
+                <div class="card card_dashboad text-center p-3">
+                    <div class="card-body">
+                        <i data-feather="file-text" class="icon-box"></i>
+                        <h5>Search Traffic</h5>
+                        <h2><?php echo $totalBlogs; ?></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in" style="animation-delay: 0.2s;">
+                <div class="card text-center p-3">
+                    <div class="card-body">
+                        <i data-feather="check-circle" class="icon-box"></i>
+                        <h5>Search Impressions</h5>
+                        <h3><?php echo $publishedBlogs; ?></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in" style="animation-delay: 0.4s;">
+                <div class="card text-center p-3">
+                    <div class="card-body">
+                        <i data-feather="edit-3" class="icon-box"></i>
+                        <h5>Total Keywords</h5>
+                        <h3><?php echo $draftBlogs; ?></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in" style="animation-delay: 0.6s;">
+                <div class="card text-center p-3">
+                    <div class="card-body">
+                        <i data-feather="eye" class="icon-box"></i>
+                        <h5>Avg. Position</h5>
+                        <h3><?php echo $totalViews; ?></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="recent-blogs fade-in" style="animation-delay: 0.8s;">
             <h3><i class="fas fa-book-open"></i> Recent Blogs</h3>
             <?php include '../blog/blog.php'; ?>

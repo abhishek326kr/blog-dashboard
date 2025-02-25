@@ -103,6 +103,13 @@
     color: white;
 }
 
+.dark-mode .profile-menu.active{
+    padding: 10px 15px;
+    background: #333;
+    color: white;
+}
+
+
 .dark-mode .card {
     background: #222 !important;
     color: white;

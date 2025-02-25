@@ -156,7 +156,9 @@ $conn->close();
             return (
                 <aside className="sidebar">
                     <div className="logo">
-                        <img src="../assets/images/logo_white.png" alt="logo" />
+                    <a href="dashboard.php">
+                        <img src="../assets/images/logo_white.png" alt="logo"/>
+                    </a>        
                     </div>
                     <ul>
                         <li className={activeView === 'dashboard' ? 'active' : ''} onClick={() => handleSelect('dashboard')}>Dashboard</li>
