@@ -1,30 +1,28 @@
 <?php
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *"); // Allow frontend to access API
-
-// Database Connection
 include '../config/db.php';
 
-if (!isset($_GET['query']) || empty($_GET['query'])) {
-    echo json_encode(["error" => "Search query is missing"]);
+if (!isset($_GET['query']) || empty(trim($_GET['query']))) {
+    echo json_encode(["results" => [], "error" => "Invalid search query"]);
     exit;
 }
 
-$searchTerm = "%" . $_GET['query'] . "%"; // Partial match for search
+$query = "%" . trim($_GET['query']) . "%";
 
-$sql = "SELECT id, title FROM blogs WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC LIMIT 10";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ss", $searchTerm, $searchTerm);
-$stmt->execute();
-$result = $stmt->get_result();
+if ($stmt = $conn->prepare("SELECT id, title FROM blogs WHERE title LIKE ? OR content LIKE ? LIMIT 10")) {
+    $stmt->bind_param("ss", $query, $query);
+    
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        $searchResults = $result->fetch_all(MYSQLI_ASSOC);
+        echo json_encode(["results" => $searchResults]);
+    } else {
+        echo json_encode(["results" => [], "error" => "Query execution failed"]);
+    }
 
-$blogs = [];
-while ($row = $result->fetch_assoc()) {
-    $blogs[] = $row;
+    $stmt->close();
+} else {
+    echo json_encode(["results" => [], "error" => "Failed to prepare statement"]);
 }
 
-$stmt->close();
 $conn->close();
-
-echo json_encode(["results" => $blogs]);
 ?>

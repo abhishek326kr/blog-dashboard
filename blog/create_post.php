@@ -90,8 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -141,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="col-md-8">
                 <div class="card card_blog">
                     <h2 class="text-center mb-4">Create Blog Post</h2>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
+                    <form id="postForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
                         enctype="multipart/form-data">
                         <div class="form-group mb-3">
                             <label>Title</label>
@@ -200,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         <div class="form-group mb-3">
                             <label>Meta Robots</label>
-                            <select name="meta_robots" class="form-control">
+                            <select name="meta_robots" class="form-control"></select></select>
                                 <option value="index, follow">Index, Follow</option>
                                 <option value="noindex, follow">No Index, Follow</option>
                                 <option value="index, nofollow">Index, No Follow</option>
@@ -219,10 +217,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 class="form-control"><?php echo $og_description; ?></textarea>
                         </div>
 
-
-
                         <div class="form-group text-center">
-                            <button type="submit" class="btn btn-success">🚀 Publish</button>
+                            <button type="submit" name="publish" class="btn btn-success">🚀 Publish</button>
+                            <button type="button" id="saveDraft" class="btn btn-warning">💾 Save as Draft</button>
                             <a href="../admin/dashboard.php?view=managePosts" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
@@ -268,6 +265,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height: 300
         });
 
+        // Autosave function
+        function autosaveDraft() {
+            const formData = new FormData(document.getElementById('postForm'));
+            formData.append('autosave', true);
+
+            fetch('save_draft.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Draft saved successfully');
+                    } else {
+                        console.error('Error saving draft');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Save draft button click event
+        document.getElementById('saveDraft').addEventListener('click', autosaveDraft);
+
+        // Warn before leaving the page
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        });
+
+        // Autosave every 30 seconds
+        setInterval(autosaveDraft, 30000);
     </script>
 </body>
 

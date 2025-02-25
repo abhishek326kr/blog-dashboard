@@ -60,21 +60,29 @@ $conn->close();
             // Load user preference from localStorage
             const [darkMode, setDarkMode] = React.useState(() => {
                 const savedMode = localStorage.getItem("darkMode");
-                if (savedMode !== null) {
-                    return savedMode === "true";  // User preference
-                }
-                return false; // Default to light mode if no preference
+                return savedMode === "true"; // User preference
             });
 
             // Apply dark mode to body
             React.useEffect(() => {
-                if (darkMode) {
-                    document.body.classList.add("dark-mode");
-                } else {
-                    document.body.classList.remove("dark-mode");
-                }
+                document.body.classList.toggle("dark-mode", darkMode);
                 localStorage.setItem("darkMode", darkMode);
             }, [darkMode]);
+
+            // Function to fetch search results
+            const fetchSearchResults = (query) => {
+                if (query.length < 3) {
+                    setSearchResults([]);
+                    return;
+                }
+
+                fetch(`../api/search.php?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        setSearchResults(data.results || []);
+                    })
+                    .catch(error => console.error("Error fetching search results:", error));
+            };
 
             return (
                 <header className="header">
@@ -85,8 +93,10 @@ $conn->close();
                             placeholder="Search blogs..."
                             value={searchTerm}
                             onChange={(e) => {
-                                setSearchTerm(e.target.value);
-                                setShowSearchResults(e.target.value.length > 0);
+                                const value = e.target.value;
+                                setSearchTerm(value);
+                                setShowSearchResults(value.length > 0);
+                                fetchSearchResults(value);
                             }}
                         />
                         <div className={`search-results ${showSearchResults ? "active" : ""}`}>
@@ -108,7 +118,6 @@ $conn->close();
                     <div className="header-right">
                         <i className="fas fa-bell notif-bell"></i>
 
-                        {/* Toggle Button */}
                         <button className="btn" onClick={() => setDarkMode(!darkMode)}>
                             {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
                         </button>
@@ -156,9 +165,7 @@ $conn->close();
             return (
                 <aside className="sidebar">
                     <div className="logo">
-                    <a href="dashboard.php">
-                        <img src="../assets/images/logo_white.png" alt="logo"/>
-                    </a>        
+                        <img src="../assets/images/logo_white.png" alt="logo" />
                     </div>
                     <ul>
                         <li className={activeView === 'dashboard' ? 'active' : ''} onClick={() => handleSelect('dashboard')}>Dashboard</li>

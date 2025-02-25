@@ -39,7 +39,7 @@ $user = mysqli_fetch_assoc($result);
             color: #f8f9fa;
         }
 
-       
+        
 
         .toggle-dark {
             position: fixed;
