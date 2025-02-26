@@ -1,42 +1,49 @@
 <?php
+
 // Include database connection
 require_once '../config/db.php';
+
+// Check database connection
+if ($conn === false) {
+    die("ERROR: Could not connect. " . mysqli_connect_error());
+}
 
 // Initialize variables
 $title = $content = $author = $featured_image = "";
 $seo_title = $seo_description = $seo_keywords = $seo_slug = $canonical_url = $meta_robots = "";
-$og_title = $og_description = $og_image = "";
+$og_title = $og_description = "";
 $title_err = $content_err = $author_err = $image_err = "";
 
 // Process form data when form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    
     // Validate title
-    $title = trim($_POST["title"]);
+    $title = trim($_POST["title"] ?? "");
     if (empty($title)) {
         $title_err = "Please enter a title.";
     }
 
     // Validate content
-    $content = trim($_POST["content"]);
+    $content = trim($_POST["content"] ?? "");
     if (empty($content)) {
         $content_err = "Please enter the content.";
     }
 
     // Validate author
-    $author = trim($_POST["author"]);
+    $author = trim($_POST["author"] ?? "");
     if (empty($author)) {
         $author_err = "Please enter the author name.";
     }
 
     // SEO Fields
-    $seo_title = trim($_POST["seo_title"]);
-    $seo_description = trim($_POST["seo_description"]);
-    $seo_keywords = trim($_POST["seo_keywords"]);
-    $seo_slug = trim($_POST["seo_slug"]);
-    $canonical_url = trim($_POST["canonical_url"]);
-    $meta_robots = trim($_POST["meta_robots"]);
-    $og_title = trim($_POST["og_title"]);
-    $og_description = trim($_POST["og_description"]);
+    $seo_title = trim($_POST["seo_title"] ?? "");
+    $seo_description = trim($_POST["seo_description"] ?? "");
+    $seo_keywords = trim($_POST["seo_keywords"] ?? "");
+    $seo_slug = trim($_POST["seo_slug"] ?? "");
+    $canonical_url = trim($_POST["canonical_url"] ?? "");
+    $meta_robots = trim($_POST["meta_robots"] ?? "");
+    $og_title = trim($_POST["og_title"] ?? "");
+    $og_description = trim($_POST["og_description"] ?? "");
 
     // Handle file upload for featured image
     if (!empty($_FILES["featured_image"]["name"])) {
@@ -47,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (in_array($image_ext, $allowed_ext)) {
             $new_image_name = uniqid("img_", true) . "." . $image_ext;
-            $target_file = $target_dir . $new_image_name;
+            $target_file = "$target_dir$new_image_name";
 
             if (move_uploaded_file($_FILES["featured_image"]["tmp_name"], $target_file)) {
                 $featured_image = $new_image_name;
@@ -57,21 +64,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $image_err = "Only JPG, JPEG, and PNG files are allowed.";
         }
+    } else {
+        $image_err = "Please upload a featured image.";
     }
 
     // Check for errors before inserting into the database
     if (empty($title_err) && empty($content_err) && empty($author_err) && empty($image_err)) {
         // Insert into `blogs` table
         $sql = "INSERT INTO blogs (title, content, author, featured_image) VALUES (?, ?, ?, ?)";
-
+        
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "ssss", $title, $content, $author, $featured_image);
-
+            
             if (mysqli_stmt_execute($stmt)) {
                 $post_id = mysqli_insert_id($conn); // Get inserted post ID
-
+                
                 // Insert into `seo_meta` table
                 $seo_sql = "INSERT INTO seo_meta (post_id, seo_title, seo_description, seo_keywords, seo_slug, canonical_url, meta_robots, og_title, og_description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                
                 if ($seo_stmt = mysqli_prepare($conn, $seo_sql)) {
                     mysqli_stmt_bind_param($seo_stmt, "issssssss", $post_id, $seo_title, $seo_description, $seo_keywords, $seo_slug, $canonical_url, $meta_robots, $og_title, $og_description);
                     mysqli_stmt_execute($seo_stmt);
@@ -219,7 +229,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         <div class="form-group text-center">
                             <button type="submit" name="publish" class="btn btn-success">🚀 Publish</button>
-                            <button type="button" id="saveDraft" class="btn btn-warning">💾 Save as Draft</button>
                             <a href="../admin/dashboard.php?view=managePosts" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
@@ -265,37 +274,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height: 300
         });
 
-        // Autosave function
-        function autosaveDraft() {
-            const formData = new FormData(document.getElementById('postForm'));
-            formData.append('autosave', true);
-
-            fetch('save_draft.php', {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('Draft saved successfully');
-                    } else {
-                        console.error('Error saving draft');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        // Save draft button click event
-        document.getElementById('saveDraft').addEventListener('click', autosaveDraft);
-
         // Warn before leaving the page
         window.addEventListener('beforeunload', function (e) {
             e.preventDefault();
             e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
         });
-
-        // Autosave every 30 seconds
-        setInterval(autosaveDraft, 30000);
     </script>
 </body>
 

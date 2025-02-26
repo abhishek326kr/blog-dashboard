@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 25, 2025 at 06:54 PM
+-- Generation Time: Feb 26, 2025 at 02:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,6 +31,8 @@ CREATE TABLE `admins` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -39,8 +41,8 @@ CREATE TABLE `admins` (
 -- Dumping data for table `admins`
 --
 
-INSERT INTO `admins` (`id`, `name`, `email`, `password`, `created_at`) VALUES
-(5, 'Firky', 'admin@example.com', '$2y$10$msfFEW8v..zB/PvKlJTDjO8rlIFf0c3525TXR.Ux6wiZqyo8CHAEW', '2025-02-19 12:05:07');
+INSERT INTO `admins` (`id`, `name`, `email`, `username`, `phone`, `password`, `created_at`) VALUES
+(5, 'Firky Kumar', 'admin@flexymarkets.com', 'admin', '07070465761', '$2y$10$msfFEW8v..zB/PvKlJTDjO8rlIFf0c3525TXR.Ux6wiZqyo8CHAEW', '2025-02-19 12:05:07');
 
 -- --------------------------------------------------------
 
@@ -64,8 +66,8 @@ CREATE TABLE `blogs` (
 --
 
 INSERT INTO `blogs` (`id`, `title`, `status`, `views`, `created_at`, `content`, `author`, `featured_image`) VALUES
-(20, 'Danny Ramirez Flies High as the Falcon in \'Captain America: Brave New World\'', 'published', 0, '2025-02-21 10:18:16', '<p>The actor suits up as&nbsp;<a href=\"https://www.marvel.com/characters/joaquin-torres\" aria-label=\"Learn more about Joaquin Torres\">Joaquin Torres</a>, aka the Falcon, in Marvel Studios&rsquo; upcoming film&nbsp;<em><a href=\"https://www.marvel.com/movies/captain-america-brave-new-world\" aria-label=\"Learn more about Captain America: Brave New World\">Captain America: Brave New World</a>.&nbsp;</em>Ramirez, 32, is no stranger to the Marvel Cinematic Universe, having made his debut in the 2021 Disney+ series&nbsp;<em><a href=\"https://www.marvel.com/tv-shows/the-falcon-and-the-winter-soldier/1\" aria-label=\"Learn more about The Falcon and The Winter Soldier\">The Falcon and The Winter Soldier</a></em>. But with&nbsp;<em>Brave New World,&nbsp;</em>he&rsquo;s reaching new heights &mdash;&nbsp;literally. With&nbsp;<strong>Anthony Mackie&rsquo;s&nbsp;</strong><a href=\"https://www.marvel.com/characters/sam-wilson\" aria-label=\"Learn more about Sam Wilson\">Sam Wilson</a>&nbsp;taking up Captain America&rsquo;s shield, Joaquin follows in his footsteps as the new incarnation of the Falcon.</p>\r\n<p>Speaking to Marvel.com ahead of the film&rsquo;s premiere, Ramirez said he&rsquo;s been overwhelmed by the positive fan reaction to Joaquin so far.</p>\r\n<p>&ldquo;The part that&rsquo;s been really powerful has been the response I&rsquo;ve seen from kids that reminded me of myself,&rdquo; Ramirez tells Marvel.com. &ldquo;When I was their age, I didn&rsquo;t have anyone in the space to look up to in the same way. I was kind of saddened by that. For me, it was athletes and musicians mainly because that&rsquo;s who I could see myself as. But it&rsquo;s been the most amazing feeling seeing people get uplifted and their hope in seeing themselves on screen.&rdquo;</p>\r\n<p>He notes that even though the movie has yet to hit theaters, he&rsquo;s already seen scores of fans in flawless Falcon cosplay &mdash; wings and all. &ldquo;That&rsquo;s been beautiful to experience,&rdquo; he says with a smile.</p>\r\n<p>&nbsp;</p>\r\n<p>&nbsp;</p>', 'Firky', 'img_67b852e8847382.47792018.jpg'),
-(21, 'Meet the Leader, the Hulk\\\\\\\'s Calculating Adversary', 'published', 0, '2025-02-21 10:19:19', '<p>The&nbsp;<a href=\\\"\\\\&quot;https:/www.marvel.com/characters/hulk-bruce-banner\\\\&quot;\\\" aria-label=\\\"\\\\&quot;Learn\\\">Hulk</a>&nbsp;was born in an explosion of gamma radiation that ripped through Bruce Banner and transformed the scientist into a rampaging giant. However,&nbsp;<a href=\\\"\\\\&quot;https:/www.marvel.com/characters/leader-samuel-sterns\\\\&quot;\\\" aria-label=\\\"\\\\&quot;Learn\\\">Samuel Sterns</a>&nbsp;experienced a different transformation when exposed to gamma radiation.<br><br>Instead of altering his body, the gamma radiation mutated the janitor\\\\\\\'s brain, granting him superhuman intelligence and a massive head. With his new abilities, Sterns became the Leader, one of the Hulk\\\\\\\'s most enduring and calculating foes.<br><br>Through his endless plans, the Leader destroyed towns and outsmarted death numerous times. While the public might call the Hulk a monster, the Leader and his lethal cruelty have shown the Marvel Universe what a true monster looks like.<br><br>Let&rsquo;s look at the Leader\\\\\\\'s exploits and his journey to earning a place as one of the Hulk\\\\\\\'s deadliest enemies. From their first encounters to battles that took them to the edge of existence, the Leader proved there are some threats that the Hulk can\\\\\\\'t smash his way through, despite his immense power.&nbsp;&nbsp;</p>\\r\\n<p><img src=\\\"../uploads/img_67ba031ff319e0.27523874.png\\\" alt=\\\"\\\" width=\\\"1920\\\" height=\\\"911\\\"></p>', 'Firky', '../uploads/ff BG.png');
+(20, 'Danny Ramirez Flies High as the Falcon in Captain America: Brave New World', 'published', 46, '2025-02-21 10:18:16', '<p>The actor suits up as&nbsp;<a href=\\\"\\\\&quot;https:/www.marvel.com/characters/joaquin-torres\\\\&quot;\\\" aria-label=\\\"\\\\&quot;Learn\\\">Joaquin Torres</a>, aka the Falcon, in Marvel Studios&rsquo; upcoming film&nbsp;<em><a href=\\\"\\\\&quot;https:/www.marvel.com/movies/captain-america-brave-new-world\\\\&quot;\\\" aria-label=\\\"\\\\&quot;Learn\\\">Captain America: Brave New World</a>.&nbsp;</em>Ramirez, 32, is no stranger to the Marvel Cinematic Universe, having made his debut in the 2021 Disney+ series&nbsp;<em><a href=\\\"\\\\&quot;https:/www.marvel.com/tv-shows/the-falcon-and-the-winter-soldier/1\\\\&quot;\\\" aria-label=\\\"\\\\&quot;Learn\\\">The Falcon and The Winter Soldier</a></em>. But with&nbsp;<em>Brave New World,&nbsp;</em>he&rsquo;s reaching new heights &mdash;&nbsp;literally. With&nbsp;<strong>Anthony Mackie&rsquo;s&nbsp;</strong><a href=\\\"\\\\&quot;https:/www.marvel.com/characters/sam-wilson\\\\&quot;\\\" aria-label=\\\"\\\\&quot;Learn\\\">Sam Wilson</a> taking up Captain America&rsquo;s shield, Joaquin follows in his footsteps as the new incarnation of the Falcon.</p>\\r\\n<p>Speaking to Marvel.com ahead of the film&rsquo;s premiere, Ramirez said he&rsquo;s been overwhelmed by the positive fan reaction to Joaquin so far.</p>\\r\\n<p>&ldquo;The part that&rsquo;s been really powerful has been the response I&rsquo;ve seen from kids that reminded me of myself,&rdquo; Ramirez tells Marvel.com. &ldquo;When I was their age, I didn&rsquo;t have anyone in the space to look up to in the same way. I was kind of saddened by that. For me, it was athletes and musicians mainly because that&rsquo;s who I could see myself as. But it&rsquo;s been the most amazing feeling seeing people get uplifted and their hope in seeing themselves on screen.&rdquo;</p>\\r\\n<p>&nbsp;</p>\\r\\n<p>He notes that even though the movie has yet to hit theaters, he&rsquo;s already seen scores of fans in flawless Falcon cosplay &mdash; wings and all. &ldquo;That&rsquo;s been beautiful to experience,&rdquo; he says with a smile.</p>\\r\\n<p>&nbsp;</p>', 'Firky', 'img_67b852e8847382.47792018.jpg'),
+(46, 'Flexy Markets vs. Go Markets Which Broker Suits Trading', 'published', 2, '2025-02-26 12:23:44', '<p data-pm-slice=\"1 1 []\">When it comes to forex trading, choosing the right broker can make all the difference.&nbsp;<a href=\"https://flexymarkets.com/\" target=\"_blank\" rel=\"nofollow noopener\"><strong>Flexy Markets vs. Go Markets</strong></a>&nbsp;is a hot topic among traders who want a reliable and feature-rich trading experience. Both brokers have a strong reputation in the industry, but how do they compare? In this in-depth comparison, we&rsquo;ll analyze&nbsp;<strong>Flexy Markets vs. Go Markets</strong>&nbsp;based on trading conditions, features, regulations, and overall user experience to help you make an informed decision.</p>\r\n<h2>Overview of Flexy Markets vs. Go Markets</h2>\r\n<p><strong>Flexy Markets</strong></p>\r\n<p>Flexy Markets is a cutting-edge forex broker that aims to provide traders with seamless execution, advanced trading tools, and a wide range of assets. Operating from the UAE, Flexy Markets is rapidly gaining recognition as a go-to platform for traders who demand low spreads, high leverage, and transparency.</p>\r\n<p><strong>Go Markets</strong></p>\r\n<p>Go Markets, an Australian-based forex broker, has been in operation since 2006. It is regulated by ASIC (Australian Securities and Investments Commission) and is well known for its strong compliance, MetaTrader 4 (MT4) and MetaTrader 5 (MT5) platforms, and educational resources.</p>\r\n<h3>Trading Platforms: Flexy Markets vs. Go Markets</h3>\r\n<p><strong>Flexy Markets</strong></p>\r\n<ul data-spread=\"false\">\r\n<li>Offers a user-friendly web-based trading platform.</li>\r\n<li>Provides MT5 for professional traders.</li>\r\n<li>Seamless mobile trading experience.</li>\r\n<li>Advanced charting tools and real-time market analysis.</li>\r\n</ul>\r\n<p><strong>Go Markets</strong></p>\r\n<ul data-spread=\"false\">\r\n<li>Offers MT4 and MT5 platforms.</li>\r\n<li>Access to Go Markets WebTrader.</li>\r\n<li>Mobile trading with dedicated apps.</li>\r\n<li>Comprehensive analytical tools for technical trading.</li>\r\n</ul>\r\n<p>Both brokers provide excellent trading platforms, but Flexy Markets&rsquo; focus on modern web-based trading with a streamlined experience gives it an edge for beginners and professionals alike.</p>\r\n<h3>Trading Instruments: Flexy Markets vs. Go Markets</h3>\r\n<p><strong>Flexy Markets</strong></p>\r\n<ul data-spread=\"false\">\r\n<li>Forex pairs (major, minor, and exotic)</li>\r\n<li>Stocks and indices</li>\r\n<li>Commodities (gold, silver, oil)</li>\r\n<li>Cryptocurrencies</li>\r\n</ul>\r\n<p><strong>Go Markets</strong></p>\r\n<ul data-spread=\"false\">\r\n<li>Forex trading pairs</li>\r\n<li>Indices and commodities</li>\r\n<li>Shares and cryptocurrencies</li>\r\n<li>ETFs and bonds</li>\r\n</ul>\r\n<p>While both brokers offer diverse trading instruments, Flexy Markets provides more competitive trading conditions for crypto traders and those looking for a broader range of assets.</p>\r\n<h3>Spreads and Commissions: Flexy Markets vs. Go Markets</h3>\r\n<p><strong>Flexy Markets</strong></p>\r\n<ul data-spread=\"false\">\r\n<li>Ultra-low spreads starting from 0.0 pips.</li>\r\n<li>No commission on standard accounts.</li>\r\n<li>ECN accounts available for tight spreads.</li>\r\n<li>Transparent pricing with no hidden fees.</li>\r\n</ul>\r\n<p><strong>Go Markets</strong></p>\r\n<ul data-spread=\"false\">\r\n<li>Spreads start from 0.0 pips on the Go Plus+ account.</li>\r\n<li>Commission-based pricing for professional traders.</li>\r\n<li>Standard accounts with higher spreads but no commissions.</li>\r\n<li>Competitive swap rates for overnight positions.</li>\r\n</ul>\r\n<p>Both brokers offer low spreads, but Flexy Markets stands out by providing commission-free trading on standard accounts while maintaining tight spreads.</p>', 'Firky Marvel', 'img_67bf07d01a1327.44658032.png');
 
 -- --------------------------------------------------------
 
@@ -126,6 +128,14 @@ CREATE TABLE `seo_meta` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `seo_meta`
+--
+
+INSERT INTO `seo_meta` (`id`, `post_id`, `seo_title`, `seo_description`, `seo_keywords`, `seo_slug`, `canonical_url`, `meta_robots`, `og_title`, `og_description`, `og_image`, `created_at`, `updated_at`) VALUES
+(3, 20, 'This is Blog', 'This is Blog', 'This is Blog', 'This is Blog', 'This is Blog', '', 'This is Blog', 'This is Blog', NULL, '2025-02-26 10:27:29', '2025-02-26 10:27:29'),
+(4, 46, 'This is test Blog', 'Flexy Markets', 'Flexy Markets', 'Flexy Markets', 'Flexy Markets', '', 'This is test Blog', 'Flexy Markets', NULL, '2025-02-26 12:23:44', '2025-02-26 12:23:44');
+
 -- --------------------------------------------------------
 
 --
@@ -150,7 +160,8 @@ CREATE TABLE `users` (
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `blogs`
@@ -202,7 +213,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `blogs`
 --
 ALTER TABLE `blogs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `media`
@@ -220,7 +231,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT for table `seo_meta`
 --
 ALTER TABLE `seo_meta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
