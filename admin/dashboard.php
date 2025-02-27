@@ -12,13 +12,14 @@ if (!$conn) {
 }
 
 $admin_id = $_SESSION['admin_id'];
-$query = "SELECT name FROM admins WHERE id = ?";
+$query = "SELECT name, profile_pic FROM admins WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $admin_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 $admin_name = $row['name'];
+$profile_pic = $row['profile_pic'];
 
 $stmt->close();
 $conn->close();
@@ -40,6 +41,8 @@ $conn->close();
     <script src="https://cdn.tiny.cloud/1/xdzl24i0eyx673s1ukp65dwkobc1sj0foqjxgtj7fewqh0gc/tinymce/6/tinymce.min.js"
         referrerpolicy="origin"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
+
+
 </head>
 
 <body>
@@ -118,7 +121,8 @@ $conn->close();
                         </button>
 
                         <button className="btn" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-                            <i className="fas fa-user-circle user-icon"></i> Hi <span id="admin-name"></span>
+                            <img src="../uploads/<?php echo $profile_pic; ?>" alt="Profile Picture" className="profile-pic-icon" />
+                            Hi <span id="admin-name"></span>
                         </button>
 
                         <div className={`profile-menu ${showProfileMenu ? "active" : ""}`}>
@@ -168,6 +172,7 @@ $conn->close();
                         <li className={activeView === 'dashboard' ? 'active' : ''} onClick={() => handleSelect('dashboard')}>Dashboard</li>
                         <li className={activeView === 'createPosts' ? 'active' : ''} onClick={() => handleSelect('createPosts')}>Create Post</li>
                         <li className={activeView === 'managePosts' ? 'active' : ''} onClick={() => handleSelect('managePosts')}>Manage Posts</li>
+                        <li className={activeView === 'instantIndex' ? 'active' : ''} onClick={() => handleSelect('instantIndex')}>Instant Indexing</li>
                         <li className={activeView === 'profile' ? 'active' : ''} onClick={() => handleSelect('profile')}>Profile</li>
                         <li className={activeView === 'settings' ? 'active' : ''} onClick={() => handleSelect('settings')}>Settings</li>
                         <li className={activeView === 'leaderboard' ? 'active' : ''} onClick={() => handleSelect('leaderboard')}>Leaderboard</li>
@@ -202,47 +207,107 @@ $conn->close();
             return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
         }
 
+
+
         function ManageProfile() {
     const [content, setContent] = React.useState('');
 
     React.useEffect(() => {
+        let isMounted = true;
         fetch('manage_user.php')
             .then(response => response.text())
             .then(data => {
-                setContent(data);
-
-                // Timeout deke ensure karo ki content load hone ke baad listener attach ho
-                setTimeout(() => {
-                    let editBtn = document.getElementById("editProfileBtn");
-                    let profileDetails = document.querySelector(".profile-details");
-                    let editForm = document.getElementById("editForm");
-
-                    if (editBtn && profileDetails && editForm) {
-                        editBtn.addEventListener("click", function () {
-                            profileDetails.style.display = "none";
-                            editForm.style.display = "block";
-                        });
-
-                        // Cancel Button
-                        let cancelBtn = document.createElement("button");
-                        cancelBtn.innerText = "Cancel";
-                        cancelBtn.classList.add("btn", "btn-secondary", "btn-sm", "mt-2");
-                        cancelBtn.addEventListener("click", function () {
-                            profileDetails.style.display = "block";
-                            editForm.style.display = "none";
-                        });
-
-                        // Ensure cancel button is added only once
-                        if (!editForm.querySelector(".btn-secondary")) {
-                            editForm.appendChild(cancelBtn);
-                        }
-                    }
-                }, 500); // Timeout to wait for DOM update
+                if (isMounted) setContent(data);
             });
+        return () => { isMounted = false };
     }, []);
+
+    React.useEffect(() => {
+        // Toggle form function
+        function toggleEditForm() {
+            const profileSection = document.getElementById('profileSection');
+            const editForm = document.getElementById('editForm');
+            [profileSection, editForm].forEach(el => {
+                if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+
+        // Section navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.profile-content > div').forEach(div => {
+                if (div) div.style.display = 'none';
+            });
+            const section = document.getElementById(sectionId + 'Section');
+            if (section) section.style.display = 'block';
+        }
+
+        // Image preview handler
+        const handleImagePreview = (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.querySelector('.profile-pic');
+                    if (img) img.src = e.target.result;
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        };
+
+        // Get DOM elements
+        const editBtn = document.getElementById('editProfileBtn');
+        const saveBtn = document.getElementById('saveChangesBtn');
+        const profilePicInput = document.querySelector('input[name="profile_pic"]');
+        const navLinks = document.querySelectorAll('[data-section]');
+
+        // Add event listeners
+        if (editBtn) editBtn.addEventListener('click', toggleEditForm);
+        if (profilePicInput) profilePicInput.addEventListener('change', handleImagePreview);
+        if (navLinks) {
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => showSection(link.dataset.section));
+            });
+        }
+
+        // Form submission handler
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('editForm'));
+            
+            fetch('manage_user.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network error');
+                return response.text();
+            })
+            .then(() => {
+                alert('Profile updated successfully!');
+                location.reload();
+            })
+            .catch(error => {
+                alert(`Error: ${error.message}`);
+            });
+        };
+
+        if (saveBtn) saveBtn.addEventListener('click', handleSubmit);
+
+        // Cleanup function
+        return () => {
+            if (editBtn) editBtn.removeEventListener('click', toggleEditForm);
+            if (profilePicInput) profilePicInput.removeEventListener('change', handleImagePreview);
+            if (navLinks) {
+                navLinks.forEach(link => {
+                    link.removeEventListener('click', () => showSection(link.dataset.section));
+                });
+            }
+            if (saveBtn) saveBtn.removeEventListener('click', handleSubmit);
+        };
+    }); // Re-run when content updates
 
     return <div dangerouslySetInnerHTML={{ __html: content }} />;
 }
+
 
 
         function CreatePosts() {
@@ -332,43 +397,41 @@ $conn->close();
             return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
         }
 
-        function Leaderboard() {
-            const [data, setData] = React.useState({ trendingBlogs: [], topUsers: [] });
+        function InstantIndex() {
+            const [content, setContent] = React.useState('');
 
             React.useEffect(() => {
-                fetch("get_leaderboard.php")
-                    .then(response => response.json())
-                    .then(data => setData(data));
+                const params = new URLSearchParams(window.location.search);
+                const postId = params.get('id');
+                fetch(`../api/instant_indexing.php`)
+                    .then(response => response.text())
+                    .then(data => setContent(data));
             }, []);
 
-            return (
-                <div className="leaderboard">
-                    <h2>🏆 Leaderboard</h2>
-
-                    <div className="leaderboard-section">
-                        <h3>🔥 Trending Blogs</h3>
-                        <ul>
-                            {data.trendingBlogs.map((blog, index) => (
-                                <li key={index}>{index + 1}. {blog.title} - {blog.views} Views</li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div className="leaderboard-section">
-                        <h3>📝 Top Contributors</h3>
-                        <ul>
-                            {data.topUsers.map((user, index) => (
-                                <li key={index}>{index + 1}. {user.author} - {user.posts} Posts</li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            );
+            return <div dangerouslySetInnerHTML={{ __html: content }} />;
         }
+
+
+        function Leaderboard() {
+            const [content, setContent] = React.useState('');
+
+            React.useEffect(() => {
+                fetch('../api/leaderboard.php')
+                    .then(response => response.text())
+                    .then(data => setContent(data));
+            }, []);
+
+            return <div dangerouslySetInnerHTML={{ __html: content }} />;
+        }
+
+
 
         function Dashboard({ view }) {
             let content;
             switch (view) {
+                case 'instantIndex':
+                    content = <InstantIndex />;
+                    break;
                 case 'leaderboard':
                     content = <Leaderboard />;
                     break;
@@ -424,10 +487,10 @@ $conn->close();
         // Set the admin name after rendering
         document.getElementById("admin-name").textContent = "<?php echo $admin_name; ?>";
 
-        
+
     </script>
 
-    
+
 </body>
 
 </html>

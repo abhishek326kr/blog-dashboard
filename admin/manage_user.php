@@ -3,36 +3,91 @@
 include '../config/db.php';
 
 session_start();
-$user_id = $_SESSION['admin_id']; // Ensure this session variable exists
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: ../auth/login.php");
+    exit();
+}
+
+$user_id = $_SESSION['admin_id'];
 
 // Fetch user details
-$query = "SELECT * FROM admins WHERE id = '$user_id'";
-$result = mysqli_query($conn, $query);
-$user = mysqli_fetch_assoc($result);
+$stmt = $conn->prepare("SELECT * FROM admins WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+// $stmt->close(); // Removed unreachable code
 
 // Handle Profile Update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $phone = mysqli_real_escape_string($conn, $_POST['phone']);
+    // Input sanitization
+    $name = htmlspecialchars($_POST['name']);
+    $username = htmlspecialchars($_POST['username']);
+    $phone = htmlspecialchars($_POST['phone']);
     $password = $_POST['password'];
+    $target_file = $user['profile_pic'];
 
-    // Update Query
-    if (!empty($password)) {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $update_query = "UPDATE admins SET name='$name', email='$email', username='$username', phone='$phone', password='$hashed_password' WHERE id='$user_id'";
-    } else {
-        $update_query = "UPDATE admins SET name='$name', email='$email', username='$username', phone='$phone' WHERE id='$user_id'";
+    // Handle File Upload
+    if (!empty($_FILES['profile_pic']['name'])) {
+        $target_dir = "../uploads/";
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+        $max_size = 2 * 1024 * 1024; // 2MB
+
+        if (in_array($_FILES['profile_pic']['type'], $allowed_types) && 
+            $_FILES['profile_pic']['size'] <= $max_size) {
+            
+            $file_name = uniqid('profile_') . '_' . basename($_FILES['profile_pic']['name']);
+            $target_file = "{$target_dir}{$file_name}";
+
+            if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target_file)) {
+                // Delete old profile picture if it exists
+                if (!empty($user['profile_pic']) && file_exists($user['profile_pic'])) {
+                    unlink($user['profile_pic']);
+                }
+            } else {
+                $_SESSION['error'] = "Failed to upload new profile picture";
+                header("Location: profile.php");
+                exit();
+            }
+        } else {
+            $_SESSION['error'] = "Invalid file type or size (max 2MB)";
+            header("Location: profile.php");
+            exit();
+        }
     }
 
-    if (mysqli_query($conn, $update_query)) {
-        echo "<script>alert('Profile updated successfully!'); window.location.href = window.location.href;</script>";
+    // Prepare Update Query
+    $update_fields = [
+        'name' => $name,
+        'username' => $username,
+        'phone' => $phone,
+        'profile_pic' => $target_file
+    ];
+
+    if (!empty($password)) {
+        $update_fields['password'] = password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    $set_clause = implode(', ', array_map(fn($field) => "$field = ?", array_keys($update_fields)));
+    $stmt = $conn->prepare("UPDATE admins SET $set_clause WHERE id = ?");
+    
+    $types = str_repeat('s', count($update_fields)) . 'i';
+    $values = array_values($update_fields);
+    $values[] = $user_id;
+    
+    $stmt->bind_param($types, ...$values);
+
+    if ($stmt->execute()) {
+        $_SESSION['success'] = "Profile updated successfully!";
+        header("Location: admin/dashboard.php?view=profile");
         exit();
     } else {
-        echo "<script>alert('Error updating profile: " . mysqli_error($conn) . "');</script>";
+        $_SESSION['error'] = "Error updating profile: {$stmt->error}";
+        header("Location: admin/dashboard.php?view=profile");
+        exit();
     }
 }
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -41,185 +96,253 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-
+    <title>Admin Profile Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-              body {
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            font-family: 'Arial', sans-serif;
+        :root {
+            --primary-color: #17423C;
+            --secondary-color: #f8f9fa;
+            --hover-color: #17423C;
         }
 
-        .dark-mode {
-            background-color:rgb(54, 54, 54);
-            color: #f8f9fa;
+        body {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            min-height: 100vh;
         }
 
-        .dark-mode a {
-            color: #f8f9fa;
-        }
-
-        .dark-mode .profile-container {
-            background-color: #222;
-            color: #f8f9fa;
-        }
-
-        .dark-mode .table>:not(caption)>*>* {
-            border-color: #444;
-            background: #222;
-            color: white;
-        }
-
-        .toggle-dark {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-        }
         .profile-container {
-            background: white;
-            max-width: 450px;
-            margin: 50px auto;
-            border: 1px solid #ddd;
-            padding: 25px;
+            max-width: 800px;
+            margin: 2rem auto;
             border-radius: 15px;
-  
-            box-shadow: 0 6px 15px rgba(255, 255, 255, 0.1);
-            transition: 0.3s ease-in-out;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            overflow: hidden;
         }
 
-        .profile-container:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+        .profile-sidebar {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            text-align: center;
         }
 
         .profile-pic {
-            width: 130px;
-            height: 130px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid white;
-            margin-bottom: 15px;
-            transition: 0.3s ease-in-out;
+            border: 4px solid white;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
         }
 
         .profile-pic:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
-        .edit-form {
-            display: none;
+        .nav-links .nav-item {
+            margin: 0.5rem 0;
         }
 
-        .form-control {
-            background: #333;
-            border: none;
+        .nav-links .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .nav-links .nav-link:hover {
             color: white;
+            padding-left: 1rem;
+        }
+
+        .profile-content {
+            background: white;
+            padding: 2rem;
         }
 
         .form-control:focus {
-            background: #444;
-            color: white;
-            box-shadow: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(74, 118, 168, 0.25);
         }
 
-        .btn-custom {
-            background: #ff5e00;
-            color: white;
-            transition: 0.3s ease-in-out;
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
         }
 
-        .btn-custom:hover {
-            background: #ff751a;
+        .btn-primary:hover {
+            background-color: var(--hover-color);
+            border-color: var(--hover-color);
         }
 
-       
+        .toggle-form-enter {
+            animation: formSlide 0.3s ease-out;
+        }
+
+        @keyframes formSlide {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="profile-container">
-        <img src="https://files.mastodonapp.uk/cache/accounts/avatars/109/896/082/068/480/122/original/1ff7a65dec79f6ea.jpg"
-            class="profile-pic" alt="Profile Picture">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-4 profile-sidebar">
+                <div class="position-sticky" style="top: 2rem;">
+                    <?php if (!empty($user['profile_pic'])): ?>
+                        <img src="<?= htmlspecialchars($user['profile_pic']) ?>" class="profile-pic" alt="Profile Picture">
+                    <?php else: ?>
+                        <div class="profile-pic bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-user-circle fa-5x text-muted"></i>
+                        </div>
+                    <?php endif; ?>
 
-        <div class="profile-details">
-            <h4><?php echo htmlspecialchars($user['name']); ?></h4>
-            <p><i class="fas fa-user"></i> <strong>Username:</strong> <?php echo htmlspecialchars($user['username']); ?>
-            </p>
-            <p><i class="fas fa-envelope"></i> <strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?>
-            </p>
-            <p><i class="fas fa-phone"></i> <strong>Phone:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
-            <p><i class="fas fa-user-shield"></i> <strong>Role:</strong> Admin</p>
-            <p><i class="fas fa-calendar-alt"></i> <strong>Joined:</strong>
-                <?php echo date("F d, Y", strtotime($user['created_at'])); ?></p>
-            <button class="btn btn-custom btn-sm" id="editProfileBtn">Edit Profile</button>
+                    <h4 class="mb-3"><?= htmlspecialchars($user['name']) ?></h4>
+                    
+                    <nav class="nav flex-column nav-links">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="showSection('profile')">
+                                <i class="fas fa-user me-2"></i>Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('security')">
+                                <i class="fas fa-lock me-2"></i>Security
+                            </a>
+                        </li>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-8 profile-content">
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= $_SESSION['error'] ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= $_SESSION['success'] ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+
+                <!-- Profile Section -->
+                <div id="profileSection">
+                    <h3 class="mb-4"><i class="fas fa-user-edit me-2"></i>Profile Information</h3>
+                    <dl class="row">
+                        <dt class="col-sm-3">Full Name</dt>
+                        <dd class="col-sm-9"><?= htmlspecialchars($user['name']) ?></dd>
+
+                        <dt class="col-sm-3">Username</dt>
+                        <dd class="col-sm-9"><?= htmlspecialchars($user['username']) ?></dd>
+
+                        <dt class="col-sm-3">Email</dt>
+                        <dd class="col-sm-9"><?= htmlspecialchars($user['email']) ?></dd>
+
+                        <dt class="col-sm-3">Phone</dt>
+                        <dd class="col-sm-9"><?= htmlspecialchars($user['phone']) ?: 'N/A' ?></dd>
+                    </dl>
+                    <button class="btn btn-primary" type="button" onclick="toggleEditForm()">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </button>
+                </div>
+
+                <!-- Edit Form -->
+                <form method="POST" id="editForm" class="toggle-form-enter" style="display: none;" enctype="multipart/form-data">
+                    <h3 class="mb-4"><i class="fas fa-user-cog me-2"></i>Edit Profile</h3>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" 
+                               value="<?= htmlspecialchars($user['name']) ?>" required>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" 
+                                   value="<?= htmlspecialchars($user['username']) ?>" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" name="phone" class="form-control" 
+                                   value="<?= htmlspecialchars($user['phone']) ?>">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
+                        <input type="file" name="profile_pic" class="form-control" 
+                               accept="image/jpeg, image/png, image/gif">
+                        <small class="text-muted">Max size 2MB (JPEG, PNG, GIF)</small>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary me-2" onclick="toggleEditForm()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Security Section -->
+                <div id="securitySection" style="display: none;">
+                    <h3 class="mb-4"><i class="fas fa-shield-alt me-2"></i>Security Settings</h3>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" placeholder="Enter new password">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" placeholder="Confirm new password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-lock me-2"></i>Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <!-- Edit Form -->
-        <form method="POST" class="edit-form" id="editForm">
-            <div class="mb-2">
-                <label class="form-label">Name</label>
-                <input type="text" name="name" class="form-control"
-                    value="<?php echo htmlspecialchars($user['name']); ?>" required>
-            </div>
-            <div class="mb-2">
-                <label class="form-label">Username</label>
-                <input type="text" name="username" class="form-control"
-                    value="<?php echo htmlspecialchars($user['username']); ?>" required>
-            </div>
-            <div class="mb-2">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control"
-                    value="<?php echo htmlspecialchars($user['email']); ?>" disabled>
-            </div>
-            <div class="mb-2">
-                <label class="form-label">Phone</label>
-                <input type="text" name="phone" class="form-control"
-                    value="<?php echo htmlspecialchars($user['phone']); ?>" required>
-            </div>
-            <div class="mb-2">
-                <label class="form-label">New Password (Leave blank to keep current)</label>
-                <input type="password" name="password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success btn-sm">Save Changes</button>
-        </form>
-
     </div>
 
-    
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let editBtn = document.getElementById("editProfileBtn");
-            let profileDetails = document.querySelector(".profile-details");
-            let editForm = document.getElementById("editForm");
+        function toggleEditForm() {
+            const profileSection = document.getElementById('profileSection');
+            const editForm = document.getElementById('editForm');
+            [profileSection, editForm].forEach(el => el.style.display = 
+                el.style.display === 'none' ? 'block' : 'none');
+        }
 
-            if (editBtn && profileDetails && editForm) {
-                editBtn.addEventListener("click", function () {
-                    profileDetails.style.display = "none";
-                    editForm.style.display = "block";
-                });
+        function showSection(sectionId) {
+            document.querySelectorAll('.profile-content > div').forEach(div => {
+                div.style.display = 'none';
+            });
+            document.getElementById(sectionId + 'Section').style.display = 'block';
+        }
 
-                // Add Cancel Button for reverting back
-                let cancelBtn = document.createElement("button");
-                cancelBtn.innerText = "Cancel";
-                cancelBtn.classList.add("btn", "btn-secondary", "btn-sm", "mt-2");
-                cancelBtn.addEventListener("click", function () {
-                    profileDetails.style.display = "block";
-                    editForm.style.display = "none";
-                });
-
-                // Ensure cancel button is added only once
-                if (!editForm.querySelector(".btn-secondary")) {
-                    editForm.appendChild(cancelBtn);
+        // Image Preview Handler
+        document.querySelector('input[name="profile_pic"]').addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.profile-pic').src = e.target.result;
                 }
-            } else {
-                console.error("Element(s) not found! Check IDs and class names.");
+                reader.readAsDataURL(this.files[0]);
             }
         });
     </script>
-
 </body>
-
 </html>

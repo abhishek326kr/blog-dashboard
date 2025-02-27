@@ -20,5 +20,5 @@ echo json_encode(["trendingBlogs" => $blogs, "topUsers" => $users]);
 ?>
 
 
-
+ 
 

@@ -1,7 +1,16 @@
 <?php
 
+// Start the session
+session_start();
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: ../auth/login.php");
+    exit();
+}
+
 // Include database connection
 require_once '../config/db.php';
+
+
 
 // Check database connection
 if ($conn === false) {

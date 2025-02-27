@@ -91,6 +91,15 @@
     display: block;
 }
 
+.profile-pic-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-right: 5px;
+}
+
 .dark-mode .search-results {
     background: #222;
     color: white;
@@ -103,11 +112,17 @@
     color: white;
 }
 
-.dark-mode .profile-menu.active{
-    padding: 10px 15px;
+.dark-mode .profile-menu {
     background: #333;
     color: white;
 }
+
+
+.dark-mode .profile-menu a{
+    
+    color: white;
+}
+
 
 
 .dark-mode .card {
@@ -154,10 +169,16 @@ body.dark-mode .header {
 
 .btn {
     background: transparent;
-    border: none;
+    border: none !important;
     cursor: pointer;
     font-size: 16px;
     padding: 5px 10px;
+    outline: none; /* Remove default outline */
+}
+
+.btn:focus {
+    outline: none !important; /* Customize the focus outline */
+
 }
 .profile-menu {
     position: absolute;
@@ -295,5 +316,68 @@ body.dark-mode .header {
 .leaderboard li span {
     float: right;
     font-weight: bold;
+}
+
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        display: none;
+    }
+
+    .sidebar.active {
+        display: block;
+    }
+
+    .content {
+        width: 100%;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .profile-menu {
+        right: 0;
+        top: 60px;
+        width: 100%;
+    }
+
+    .main {
+        margin: 0;
+        padding: 10px;
+    }
+
+    .dashboard-container {
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    .card_dashboad {
+        margin-bottom: 20px;
+    }
+
+    .leaderboard {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .toggle-button {
+        display: block;
+        background: #17423C;
+        color: white;
+        padding: 10px;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
 }
 
