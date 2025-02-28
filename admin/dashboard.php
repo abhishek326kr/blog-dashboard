@@ -198,14 +198,40 @@ $conn->close();
 
 
         function ManageProfile() {
-            return (
-            <iframe
-                src="manage_user.html"
-                style={{ width: "100%", height: "100vh", border: "none" }}
-                title="Manage Profile"
-            ></iframe>
-            );
-        }
+    const [profile, setProfile] = React.useState(null);
+
+    React.useEffect(() => {
+        fetch('../api/manage_user.php')
+            .then(response => response.json())
+            .then(data => setProfile(data))
+            .catch(error => console.error('Error fetching profile:', error));
+    }, []);
+
+    if (!profile) {
+        return <div className="profile-loading">Loading...</div>;
+    }
+
+    return (
+        <div className="profile-container">
+            <div className="profile-card">
+                <h2 className="profile-title">Profile Details</h2>
+                <div className="profile-content">
+                <div className="profile-picture-container">
+                        <img src={`../uploads/${profile.profile_pic}`} alt="Profile Picture" className="profile-picture" />
+                    </div>
+                    <div className="profile-info">
+                        <p><strong>Name:</strong> {profile.name}</p>
+                        <p><strong>Username:</strong> {profile.username}</p>
+                        <p><strong>Email:</strong> {profile.email}</p>
+                        <p><strong>Phone:</strong> {profile.phone}</p>
+                    </div>
+                    
+                </div>
+                <button className="profile-edit-button" onClick={() => window.location.href = 'manage_user.html'}>Edit Profile</button>
+            </div>
+        </div>
+    );
+}
 
         function CreatePosts() {
             const [content, setContent] = React.useState('');

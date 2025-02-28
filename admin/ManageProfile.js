@@ -44,6 +44,7 @@ function ManageProfile() {
         if (data.success) {
           setMessage({ success: data.success, error: null });
           setUser((prev) => ({ ...prev, ...data }));
+          window.location.href = "dashboard.php?view=profile";
         } else {
           setMessage({ success: null, error: data.error });
         }
@@ -83,21 +84,21 @@ function ManageProfile() {
   if (!user) return <div className="text-center text-gray-600">Loading...</div>;
 
   return (
-    <div className="flex h-screen bg-gradient-to-r from-blue-50 to-purple-50">
+    <div className="flex h-screen bg-gradient-to-r from-blue-50 to-purple-50 h-full">
       {/* Sidebar */}
-      <div className="w-1/4 bg-gradient-to-b from-[#17423C] to-[#0d2926] text-white p-6 flex flex-col items-center shadow-lg">
-        <h2 className="text-2xl font-bold mb-4">Profile</h2>
-        <img
-          src={imagePreview}
-          alt="Profile"
-          style={{ width: "250px", height: "250px" }}
-          className="rounded-full border-4 border-white object-cover shadow-lg hover:scale-105 transition-transform duration-300"
-        />
-        <p className="mt-4 text-xl font-semibold">{user.name}</p>
-        <p className="text-md">{user.username}</p>
-      </div>
+        <div className="w-1/4 bg-gradient-to-b from-[#17423C] to-[#0d2926] text-white p-6 flex flex-col items-center shadow-lg h-full">
+          <h2 className="text-2xl font-bold mb-4">Profile</h2>
+          <img
+            src={imagePreview}
+            alt="Profile"
+            style={{ width: "250px", height: "250px" }}
+            className="rounded-full border-4 border-white object-cover shadow-lg hover:scale-105 transition-transform duration-300"
+          />
+          <p className="mt-4 text-xl font-semibold">{user.name}</p>
+          <p className="text-md">{user.username}</p>
+        </div>
 
-      {/* Main Content */}
+        {/* Main Content */}
       <div className="w-3/4 p-6">
         <h3 className="text-2xl font-bold mb-6 text-gray-800">
           Manage Profile

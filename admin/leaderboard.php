@@ -147,7 +147,7 @@
         }
 
         .leaderboard-list-item span:last-child {
-            color: #28a745;
+            color:rgb(8, 41, 15);
         }
 
         /* Responsive Design */

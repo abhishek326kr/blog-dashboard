@@ -14,7 +14,7 @@ if (!isset($_SESSION['admin_id'])) {
 $user_id = $_SESSION['admin_id'];
 
 // Fetch existing user data
-$stmt = $conn->prepare("SELECT name, username, phone, profile_pic, password FROM admins WHERE id = ?");
+$stmt = $conn->prepare("SELECT name, username, phone, profile_pic, password, email FROM admins WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
     $name = htmlspecialchars(trim($_POST['name']));
     $username = htmlspecialchars(trim($_POST['username']));
     $phone = htmlspecialchars(trim($_POST['phone']));
+    $email = htmlspecialchars(trim($_POST['email']));
 
     // Handle Profile Picture Upload
     $target_file = $user['profile_pic']; // Keep existing picture if no new one is uploaded
@@ -49,8 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
     }
 
     // Update Query
-    $stmt = $conn->prepare("UPDATE admins SET name = ?, username = ?, phone = ?, profile_pic = ? WHERE id = ?");
-    $stmt->bind_param("ssssi", $name, $username, $phone, $target_file, $user_id);
+    $stmt = $conn->prepare("UPDATE admins SET name = ?, username = ?, phone = ?, profile_pic = ?, email = ? WHERE id = ?");
+    $stmt->bind_param("sssssi", $name, $username, $phone, $target_file, $email, $user_id);
 
     if ($stmt->execute()) {
         echo json_encode(["success" => "Profile updated successfully!", "profile_pic" => $target_file]);
@@ -91,7 +92,8 @@ echo json_encode([
     "name" => $user['name'],
     "username" => $user['username'],
     "phone" => $user['phone'],
-    "profile_pic" => $user['profile_pic']
+    "profile_pic" => $user['profile_pic'],
+    "email" => $user['email']
 ]);
 exit();
 ?>
