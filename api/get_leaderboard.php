@@ -10,15 +10,8 @@ $blogs = mysqli_fetch_all($blogResult, MYSQLI_ASSOC);
 $userQuery = "SELECT author, COUNT(*) as posts FROM blogs GROUP BY author ORDER BY posts DESC LIMIT 5";
 $userResult = mysqli_query($conn, $userQuery);
 if ($userResult) {
-	$users = mysqli_fetch_all($userResult, MYSQLI_ASSOC);
+    $users = mysqli_fetch_all($userResult, MYSQLI_ASSOC);
 } else {
-	$users = [];
+    $users = [];
 }
-
-// Send JSON Response
-echo json_encode(["trendingBlogs" => $blogs, "topUsers" => $users]);
 ?>
-
-
- 
-

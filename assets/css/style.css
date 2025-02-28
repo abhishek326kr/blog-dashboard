@@ -6,6 +6,11 @@
     
 }
 
+body {
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    font-family: 'Arial', sans-serif;
+}
+
 .sidebar {
     width: 15%;
     height: 100vh;

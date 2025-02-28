@@ -32,8 +32,8 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Flexy Markets</title>
-    <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
-    <script src="../assets/js/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="../assets/js/babel.min.js"></script>
 
     <link rel="icon" href="../assets/images/favicon.ico" type="image/png">
@@ -41,7 +41,8 @@ $conn->close();
     <script src="https://cdn.tiny.cloud/1/xdzl24i0eyx673s1ukp65dwkobc1sj0foqjxgtj7fewqh0gc/tinymce/6/tinymce.min.js"
         referrerpolicy="origin"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
-
+    <script src="../assets/js/scripts.js"></script>
+    <!-- Tailwind CSS (Optional, for styling) -->
 
 </head>
 
@@ -49,7 +50,7 @@ $conn->close();
     <div id="root"></div>
 
     <script type="text/babel">
-        function Header() {
+        function Header({ adminName }) {
             const [searchTerm, setSearchTerm] = React.useState("");
             const [searchResults, setSearchResults] = React.useState([]);
             const [showProfileMenu, setShowProfileMenu] = React.useState(false);
@@ -122,7 +123,7 @@ $conn->close();
 
                         <button className="btn" onClick={() => setShowProfileMenu(!showProfileMenu)}>
                             <img src="../uploads/<?php echo $profile_pic; ?>" alt="Profile Picture" className="profile-pic-icon" />
-                            Hi <span id="admin-name"></span>
+                            Hi <?php echo $admin_name; ?>
                         </button>
 
                         <div className={`profile-menu ${showProfileMenu ? "active" : ""}`}>
@@ -194,127 +195,24 @@ $conn->close();
 
             return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
         }
-        function ManagePosts() {
-            const [content, setContent] = React.useState('');
-            const contentRef = React.useRef(null);
-
-            React.useEffect(() => {
-                fetch('manage_posts.php')
-                    .then(response => response.text())
-                    .then(data => setContent(data));
-            }, []);
-
-            return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
-        }
-
 
 
         function ManageProfile() {
-    const [content, setContent] = React.useState('');
-
-    React.useEffect(() => {
-        let isMounted = true;
-        fetch('manage_user.php')
-            .then(response => response.text())
-            .then(data => {
-                if (isMounted) setContent(data);
-            });
-        return () => { isMounted = false };
-    }, []);
-
-    React.useEffect(() => {
-        // Toggle form function
-        function toggleEditForm() {
-            const profileSection = document.getElementById('profileSection');
-            const editForm = document.getElementById('editForm');
-            [profileSection, editForm].forEach(el => {
-                if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-            });
+            return (
+            <iframe
+                src="manage_user.html"
+                style={{ width: "100%", height: "100vh", border: "none" }}
+                title="Manage Profile"
+            ></iframe>
+            );
         }
-
-        // Section navigation
-        function showSection(sectionId) {
-            document.querySelectorAll('.profile-content > div').forEach(div => {
-                if (div) div.style.display = 'none';
-            });
-            const section = document.getElementById(sectionId + 'Section');
-            if (section) section.style.display = 'block';
-        }
-
-        // Image preview handler
-        const handleImagePreview = (e) => {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.querySelector('.profile-pic');
-                    if (img) img.src = e.target.result;
-                }
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        };
-
-        // Get DOM elements
-        const editBtn = document.getElementById('editProfileBtn');
-        const saveBtn = document.getElementById('saveChangesBtn');
-        const profilePicInput = document.querySelector('input[name="profile_pic"]');
-        const navLinks = document.querySelectorAll('[data-section]');
-
-        // Add event listeners
-        if (editBtn) editBtn.addEventListener('click', toggleEditForm);
-        if (profilePicInput) profilePicInput.addEventListener('change', handleImagePreview);
-        if (navLinks) {
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => showSection(link.dataset.section));
-            });
-        }
-
-        // Form submission handler
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            const formData = new FormData(document.getElementById('editForm'));
-            
-            fetch('manage_user.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network error');
-                return response.text();
-            })
-            .then(() => {
-                alert('Profile updated successfully!');
-                location.reload();
-            })
-            .catch(error => {
-                alert(`Error: ${error.message}`);
-            });
-        };
-
-        if (saveBtn) saveBtn.addEventListener('click', handleSubmit);
-
-        // Cleanup function
-        return () => {
-            if (editBtn) editBtn.removeEventListener('click', toggleEditForm);
-            if (profilePicInput) profilePicInput.removeEventListener('change', handleImagePreview);
-            if (navLinks) {
-                navLinks.forEach(link => {
-                    link.removeEventListener('click', () => showSection(link.dataset.section));
-                });
-            }
-            if (saveBtn) saveBtn.removeEventListener('click', handleSubmit);
-        };
-    }); // Re-run when content updates
-
-    return <div dangerouslySetInnerHTML={{ __html: content }} />;
-}
-
-
 
         function CreatePosts() {
             const [content, setContent] = React.useState('');
             const contentRef = React.useRef(null);
 
             React.useEffect(() => {
+
                 fetch('../blog/create_post.php')
                     .then(response => response.text())
                     .then(data => {
@@ -416,7 +314,9 @@ $conn->close();
             const [content, setContent] = React.useState('');
 
             React.useEffect(() => {
-                fetch('../api/leaderboard.php')
+                const params = new URLSearchParams(window.location.search);
+                const postId = params.get('id');
+                fetch('leaderboard.php')
                     .then(response => response.text())
                     .then(data => setContent(data));
             }, []);
@@ -424,9 +324,22 @@ $conn->close();
             return <div dangerouslySetInnerHTML={{ __html: content }} />;
         }
 
+        function ManagePosts() {
+            const [content, setContent] = React.useState('');
+            const contentRef = React.useRef(null);
+
+            React.useEffect(() => {
+                fetch('manage_posts.php')
+                    .then(response => response.text())
+                    .then(data => setContent(data));
+            }, []);
+
+            return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
+        }
 
 
-        function Dashboard({ view }) {
+
+        function Dashboard({ view, adminName }) {
             let content;
             switch (view) {
                 case 'instantIndex':
@@ -468,7 +381,7 @@ $conn->close();
             );
         }
 
-        function App() {
+        function App({ adminName }) {
             const [view, setView] = React.useState(() => {
                 const params = new URLSearchParams(window.location.search);
                 return params.get('view') || 'dashboard';
@@ -477,15 +390,14 @@ $conn->close();
             return (
                 <div style={{ display: "flex" }}>
                     <Sidebar onSelect={setView} activeView={view} />
-                    <Dashboard view={view} />
+                    <Dashboard view={view} adminName={adminName} />
                 </div>
             );
         }
 
-        ReactDOM.render(<App />, document.getElementById("root"));
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<App adminName="<?php echo $admin_name; ?>" />);
 
-        // Set the admin name after rendering
-        document.getElementById("admin-name").textContent = "<?php echo $admin_name; ?>";
 
 
     </script>
