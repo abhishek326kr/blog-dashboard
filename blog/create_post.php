@@ -1,5 +1,4 @@
 <?php
-
 // Start the session
 session_start();
 if (!isset($_SESSION['admin_id'])) {
@@ -10,17 +9,35 @@ if (!isset($_SESSION['admin_id'])) {
 // Include database connection
 require_once '../config/db.php';
 
-
-
 // Check database connection
 if ($conn === false) {
     die("ERROR: Could not connect. " . mysqli_connect_error());
 }
 
+// Query for Admin Name
+$admin_id = $_SESSION['admin_id'];
+$query = "SELECT name FROM admins WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$admin_name = $row['name'];
+
+// Function to generate SEO-friendly slug
+function generateSlug($title) {
+    $slug = strtolower($title);
+    $slug = preg_replace('/\s+/', '-', $slug);
+    $slug = preg_replace('/[^a-z0-9\-]/', '', $slug);
+    $slug = preg_replace('/-+/', '-', $slug);
+    $slug = trim($slug, '-');
+    return $slug;
+}
+
 // Initialize variables
 $title = $content = $author = $featured_image = "";
 $seo_title = $seo_description = $seo_keywords = $seo_slug = $canonical_url = $meta_robots = "";
-$og_title = $og_description = "";
+$og_title = $og_description = $tags = "";
 $title_err = $content_err = $author_err = $image_err = "";
 
 // Process form data when form is submitted
@@ -38,21 +55,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $content_err = "Please enter the content.";
     }
 
-    // Validate author
-    $author = trim($_POST["author"] ?? "");
-    if (empty($author)) {
-        $author_err = "Please enter the author name.";
-    }
-
     // SEO Fields
     $seo_title = trim($_POST["seo_title"] ?? "");
     $seo_description = trim($_POST["seo_description"] ?? "");
     $seo_keywords = trim($_POST["seo_keywords"] ?? "");
-    $seo_slug = trim($_POST["seo_slug"] ?? "");
-    $canonical_url = trim($_POST["canonical_url"] ?? "");
+    $seo_slug = generateSlug($title); // Auto-generate slug
+    $base_url = "https://yoursite.com/blog/"; // Replace with your site's base URL
+    $canonical_url = $base_url . $seo_slug; // Auto-generate canonical URL
     $meta_robots = trim($_POST["meta_robots"] ?? "");
     $og_title = trim($_POST["og_title"] ?? "");
     $og_description = trim($_POST["og_description"] ?? "");
+
+    // Additional Fields
+    $tags = trim($_POST["tags"] ?? "");
 
     // Handle file upload for featured image
     if (!empty($_FILES["featured_image"]["name"])) {
@@ -79,11 +94,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Check for errors before inserting into the database
     if (empty($title_err) && empty($content_err) && empty($author_err) && empty($image_err)) {
+        // Check if the slug already exists
+        $slug_check_sql = "SELECT id FROM blogs WHERE seo_slug = ?";
+        if ($slug_stmt = mysqli_prepare($conn, $slug_check_sql)) {
+            mysqli_stmt_bind_param($slug_stmt, "s", $seo_slug);
+            mysqli_stmt_execute($slug_stmt);
+            mysqli_stmt_store_result($slug_stmt);
+
+            if (mysqli_stmt_num_rows($slug_stmt) > 0) {
+                // Append a unique identifier to the slug
+                $seo_slug .= '-' . uniqid();
+            }
+            mysqli_stmt_close($slug_stmt);
+        }
+
         // Insert into `blogs` table
-        $sql = "INSERT INTO blogs (title, content, author, featured_image) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO blogs (title, content, author, featured_image, tags) VALUES (?, ?, ?, ?, ?)";
         
         if ($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "ssss", $title, $content, $author, $featured_image);
+            mysqli_stmt_bind_param($stmt, "sssss", $title, $content, $admin_name, $featured_image, $tags);
             
             if (mysqli_stmt_execute($stmt)) {
                 $post_id = mysqli_insert_id($conn); // Get inserted post ID
@@ -177,7 +206,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <label>Author</label>
                             <input type="text" name="author"
                                 class="form-control <?php echo (!empty($author_err)) ? 'is-invalid' : ''; ?>"
-                                value="<?php echo $author; ?>">
+                                value="<?php echo $admin_name; ?>" disabled>
                             <div class="invalid-feedback"><?php echo $author_err; ?></div>
                         </div>
                         <div class="form-group mb-3">
@@ -187,53 +216,49 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <div class="invalid-feedback"><?php echo $image_err; ?></div>
                         </div>
 
+                        <!-- SEO Fields -->
                         <div class="form-group mb-3">
                             <label>SEO Title</label>
                             <input type="text" name="seo_title" class="form-control" value="<?php echo $seo_title; ?>">
                         </div>
-
                         <div class="form-group mb-3">
                             <label>SEO Description</label>
-                            <textarea name="seo_description"
-                                class="form-control"><?php echo $seo_description; ?></textarea>
+                            <textarea name="seo_description" class="form-control"><?php echo $seo_description; ?></textarea>
                         </div>
-
                         <div class="form-group mb-3">
                             <label>SEO Keywords (comma separated)</label>
-                            <input type="text" name="seo_keywords" class="form-control"
-                                value="<?php echo $seo_keywords; ?>">
+                            <input type="text" name="seo_keywords" class="form-control" value="<?php echo $seo_keywords; ?>">
                         </div>
-
                         <div class="form-group mb-3">
                             <label>SEO Slug</label>
                             <input type="text" name="seo_slug" class="form-control" value="<?php echo $seo_slug; ?>">
                         </div>
-
                         <div class="form-group mb-3">
                             <label>Canonical URL</label>
-                            <input type="text" name="canonical_url" class="form-control"
-                                value="<?php echo $canonical_url; ?>">
+                            <input type="text" name="canonical_url" class="form-control" value="<?php echo $canonical_url; ?>">
                         </div>
-
                         <div class="form-group mb-3">
                             <label>Meta Robots</label>
-                            <select name="meta_robots" class="form-control"></select></select>
+                            <select name="meta_robots" class="form-control">
                                 <option value="index, follow">Index, Follow</option>
                                 <option value="noindex, follow">No Index, Follow</option>
                                 <option value="index, nofollow">Index, No Follow</option>
                                 <option value="noindex, nofollow">No Index, No Follow</option>
                             </select>
                         </div>
-
                         <div class="form-group mb-3">
                             <label>OG Title</label>
                             <input type="text" name="og_title" class="form-control" value="<?php echo $og_title; ?>">
                         </div>
-
                         <div class="form-group mb-3">
                             <label>OG Description</label>
-                            <textarea name="og_description"
-                                class="form-control"><?php echo $og_description; ?></textarea>
+                            <textarea name="og_description" class="form-control"><?php echo $og_description; ?></textarea>
+                        </div>
+
+                        <!-- Additional Fields -->
+                        <div class="form-group mb-3">
+                            <label>Tags (comma separated)</label>
+                            <input type="text" name="tags" class="form-control" value="<?php echo $tags; ?>">
                         </div>
 
                         <div class="form-group text-center">

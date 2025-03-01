@@ -3,7 +3,7 @@
 include('../config/db.php');
 
 // Fetch all posts from the database
-$query = "SELECT * FROM blogs";
+$query = "SELECT * FROM blogs ORDER BY created_at DESC";
 $result = mysqli_query($conn, $query);
 
 $sn = 1;

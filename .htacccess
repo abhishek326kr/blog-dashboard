@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^blog/([a-z0-9-]+)$ post.php?slug=$1 [L]

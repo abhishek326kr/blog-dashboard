@@ -3,7 +3,7 @@
 include '../config/db.php';
 
 // Fetch blogs from database
-$sql = "SELECT * FROM blogs";
+$sql = "SELECT * FROM blogs ORDER BY created_at DESC";
 
 $blog = $conn->query($sql);
 

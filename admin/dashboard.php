@@ -37,6 +37,9 @@ $conn->close();
     <script src="../assets/js/babel.min.js"></script>
 
     <link rel="icon" href="../assets/images/favicon.ico" type="image/png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.tiny.cloud/1/xdzl24i0eyx673s1ukp65dwkobc1sj0foqjxgtj7fewqh0gc/tinymce/6/tinymce.min.js"
         referrerpolicy="origin"></script>
@@ -174,6 +177,7 @@ $conn->close();
                         <li className={activeView === 'createPosts' ? 'active' : ''} onClick={() => handleSelect('createPosts')}>Create Post</li>
                         <li className={activeView === 'managePosts' ? 'active' : ''} onClick={() => handleSelect('managePosts')}>Manage Posts</li>
                         <li className={activeView === 'instantIndex' ? 'active' : ''} onClick={() => handleSelect('instantIndex')}>Instant Indexing</li>
+                        <li className={activeView === 'manageComments' ? 'active' : ''} onClick={() => handleSelect('manageComments')}>Manage Comments</li>
                         <li className={activeView === 'profile' ? 'active' : ''} onClick={() => handleSelect('profile')}>Profile</li>
                         <li className={activeView === 'settings' ? 'active' : ''} onClick={() => handleSelect('settings')}>Settings</li>
                         <li className={activeView === 'leaderboard' ? 'active' : ''} onClick={() => handleSelect('leaderboard')}>Leaderboard</li>
@@ -198,40 +202,56 @@ $conn->close();
 
 
         function ManageProfile() {
-    const [profile, setProfile] = React.useState(null);
+            const [profile, setProfile] = React.useState(null);
 
-    React.useEffect(() => {
-        fetch('../api/manage_user.php')
-            .then(response => response.json())
-            .then(data => setProfile(data))
-            .catch(error => console.error('Error fetching profile:', error));
-    }, []);
+            React.useEffect(() => {
+                fetch('../api/manage_user.php')
+                    .then(response => response.json())
+                    .then(data => setProfile(data))
+                    .catch(error => console.error('Error fetching profile:', error));
+            }, []);
 
-    if (!profile) {
-        return <div className="profile-loading">Loading...</div>;
-    }
+            if (!profile) {
+                return <div className="profile-loading">Loading...</div>;
+            }
 
-    return (
-        <div className="profile-container">
-            <div className="profile-card">
-                <h2 className="profile-title">Profile Details</h2>
-                <div className="profile-content">
-                <div className="profile-picture-container">
-                        <img src={`../uploads/${profile.profile_pic}`} alt="Profile Picture" className="profile-picture" />
+            return (
+                <div className="profile-container">
+                    <div className="profile-card">
+                        <h2 className="profile-title">Profile Details</h2>
+                        <div className="profile-content">
+                            <div className="profile-picture-container">
+                                <img src={`../uploads/${profile.profile_pic}`} alt="Profile Picture" className="profile-picture" />
+                            </div>
+                            <div className="profile-info">
+                                <p><strong>Name:</strong> {profile.name}</p>
+                                <p><strong>Username:</strong> {profile.username}</p>
+                                <p><strong>Email:</strong> {profile.email}</p>
+                                <p><strong>Phone:</strong> {profile.phone}</p>
+                            </div>
+
+                        </div>
+                        <button className="profile-edit-button" onClick={() => window.location.href = 'manage_user.html'}>Edit Profile</button>
                     </div>
-                    <div className="profile-info">
-                        <p><strong>Name:</strong> {profile.name}</p>
-                        <p><strong>Username:</strong> {profile.username}</p>
-                        <p><strong>Email:</strong> {profile.email}</p>
-                        <p><strong>Phone:</strong> {profile.phone}</p>
-                    </div>
-                    
                 </div>
-                <button className="profile-edit-button" onClick={() => window.location.href = 'manage_user.html'}>Edit Profile</button>
-            </div>
-        </div>
-    );
-}
+            );
+        }
+
+
+        function ManageComments() {
+            const [content, setContent] = React.useState('');
+            const contentRef = React.useRef(null);
+
+            React.useEffect(() => {
+                fetch('../blog/manage_comments.php')
+                    .then(response => response.text())
+                    .then(data => setContent(data));
+            }, []);
+
+            return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
+        }
+
+
 
         function CreatePosts() {
             const [content, setContent] = React.useState('');
@@ -368,6 +388,9 @@ $conn->close();
         function Dashboard({ view, adminName }) {
             let content;
             switch (view) {
+                case 'manageComments':
+                    content = <ManageComments />;
+                    break;
                 case 'instantIndex':
                     content = <InstantIndex />;
                     break;
@@ -428,6 +451,8 @@ $conn->close();
 
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 
 </body>
 
