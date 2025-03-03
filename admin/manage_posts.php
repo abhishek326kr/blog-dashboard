@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: ../auth/login.php");
+    exit();
+}
 // Include database connection
 include('../config/db.php');
 

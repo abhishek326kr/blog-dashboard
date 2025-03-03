@@ -7,40 +7,38 @@ if (isset($_SESSION['admin_id'])) {
     exit();
 }
 
+$error_message = ""; // Variable to store errors
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-    $query = "SELECT id, password FROM admins WHERE email = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-    
-    echo "<pre>";
-    print_r($stmt);
-    echo "</pre>";
+    if (!empty($email) && !empty($password)) {
+        $query = "SELECT id, password FROM admins WHERE email = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($admin_id, $hashed_password);
-        $stmt->fetch();
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($admin_id, $hashed_password);
+            $stmt->fetch();
 
-        echo "Hashed Password from DB: " . $hashed_password . "<br>";
-        echo "Entered Password: " . $password . "<br>";
-
-        if (password_verify($password, $hashed_password)) {
-            echo "Password Matched!";
-            $_SESSION['admin_id'] = $admin_id;
-            header("Location: ../admin/dashboard.php");
-            exit();
+            if (password_verify($password, $hashed_password)) {
+                $_SESSION['admin_id'] = $admin_id;
+                header("Location: ../admin/dashboard.php");
+                exit();
+            } else {
+                $error_message = "Invalid email or password.";
+            }
         } else {
-            echo "Password Not Matched!";
+            $error_message = "Invalid email or password.";
         }
+        $stmt->close();
     } else {
-        echo "Admin Not Found!";
+        $error_message = "Please fill in both fields.";
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en" class="light-style layout-wide customizer-hide" dir="ltr">
@@ -48,6 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>Admin Login</title>
+
+    <link rel="icon" href="../assets/images/favicon.ico" type="image/png">
+
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,40 +58,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
     <style>
-        /* 🌿 Theme Colors */
         :root {
             --primary-color: #17423C;
             --secondary-color: #699D89;
             --background-color: #E9EFEC;
             --white: #fff;
+            --gradient-start: #17423C;
+            --gradient-end: #699D89;
         }
 
-        /* 🌟 Page Background */
         body {
-            background-color: var(--background-color);
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
             font-family: 'Public Sans', sans-serif;
+            margin: 0;
         }
 
-        /* 📌 Login Card */
         .login-container {
             background: var(--white);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-            width: 380px;
-      
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            animation: fadeIn 1s ease-in-out;
         }
 
-        /* 🔹 Header */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .login-container h4 {
             color: var(--primary-color);
             font-weight: bold;
             margin-bottom: 10px;
+            font-size: 24px;
         }
 
         .login-container p {
@@ -99,10 +108,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 20px;
         }
 
-        /* 🔹 Input Fields */
         .form-control {
             border: 1px solid var(--secondary-color);
             border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
         }
 
         .form-control:focus {
@@ -110,10 +120,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             box-shadow: 0px 0px 5px rgba(23, 66, 60, 0.3);
         }
 
-        /* 🔥 Submit Button */
         .btn-login {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: none;
             border-radius: 8px;
             font-size: 16px;
@@ -126,46 +135,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .btn-login:hover {
             background: var(--secondary-color);
+            transform: translateY(-2px);
         }
 
-        /* ❌ Error Message */
         .error-msg {
             margin-top: 10px;
             padding: 10px;
             background: rgba(255, 0, 0, 0.7);
             color: white;
             border-radius: 5px;
+            text-align: center;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            width: 120px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
 
-    <form method="post" class="login-container">
-        <img src="../assets/images/flexy_dark_logo.png" alt="Logo" width="120">
+    <form method="post" class="login-container animate__animated animate__fadeIn">
+        <img src="../assets/images/flexy_dark_logo.png" alt="Logo" class="logo">
 
         <h4>Welcome Back! 👋</h4>
         <p>Please log in to your Admin account</p>
 
-        <?php if(isset($error_message)): ?>
-            <div class="alert alert-danger"><?= htmlspecialchars($error_message); ?></div>
+        <?php if (!empty($error_message)): ?>
+            <div class="alert alert-danger error-msg"><?= htmlspecialchars($error_message); ?></div>
         <?php endif; ?>
 
         <div class="mb-3">
-            <label for="username" class="form-label">Email</label>
-            <input type="email" class="form-control"  name="email" placeholder="Enter your Admin Email" required>
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" placeholder="Enter your Admin Email" required>
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" class="form-control" name="password" placeholder="••••••••" required>
+            <input type="password" class="form-control" name="password" placeholder="••••••••" required>
         </div>
 
         <button type="submit" class="btn btn-login">Login</button>
-
-
     </form>
 
 </body>
 </html>
-
-

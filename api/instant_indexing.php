@@ -156,7 +156,7 @@ $index_logs = json_decode(file_get_contents($log_file), true);
 <body class="py-5">
     <div class="container">
         <div class="glass-card p-4 mb-5">
-            <h1 class="text-center mb-4 display-5 fw-bold">
+            <h1 class="text-center mb-4  fw-bold">
                 <i class="fas fa-rocket me-2"></i>Instant Indexing Dashboard
             </h1>
             

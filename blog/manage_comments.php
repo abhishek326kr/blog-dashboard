@@ -71,58 +71,184 @@ mysqli_close($conn);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Modern Glassmorphism Design */
         body {
             background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
             font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
         }
 
         .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
             border: none;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
 
         .table {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: transparent;
+            margin-bottom: 0;
         }
 
         .table th,
         .table td {
             vertical-align: middle;
+            padding: 12px 15px;
+        }
+
+        .table th {
+            background: rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            color: #333;
+        }
+
+        .table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 0, 0, 0.03);
         }
 
         .btn-action {
             margin: 2px;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            opacity: 0.8;
         }
 
         .btn-action:hover {
             transform: scale(1.1);
+            opacity: 1;
         }
 
         .modal-content {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: none;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .alert {
             border-radius: 10px;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            background-color:rgb(54, 54, 54);
+            color: #f8f9fa;
+        }
+
+        .dark-mode a {
+            color: #f8f9fa;
+        }
+
+    
+
+        .dark-mode .table>:not(caption)>*>* {
+            border-color: #444;
+            background: #222;
+            color: white;
+        }
+
+        .toggle-dark {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
+        
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #17423C, #699D89);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #17423C, #17423C);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #17423C, #699D89);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+        }
+
+        .post-title-link {
+            font-weight: bold;
+            color: #17423C;
+            text-decoration: none;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+
+        .post-title-link:hover {
+            color:rgb(1, 87, 75);
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Manage Comments</h1>
+    <div class="container">
+        <h1>Manage Comments</h1>
 
         <!-- Display success/error messages -->
         <?php if (isset($success_message)): ?>
@@ -137,7 +263,6 @@ mysqli_close($conn);
             <table class="table table-hover">
                 <thead class="table-dark">
                     <tr>
-
                         <th>Post Title</th>
                         <th>Name</th>
                         <th>Email</th>
@@ -150,7 +275,7 @@ mysqli_close($conn);
                     <?php foreach ($comments as $comment): ?>
                         <tr>
                             <td>
-                                <a href="../admin/dashboard.php?view=post&id=<?php echo htmlspecialchars($comment['post_id']); ?>"
+                                <a class="post-title-link" href="../admin/dashboard.php?view=post&id=<?php echo htmlspecialchars($comment['post_id']); ?>"
                                     target="_blank">
                                     <?php echo htmlspecialchars($comment['post_title']); ?>
                                 </a>
@@ -214,7 +339,6 @@ mysqli_close($conn);
             </table>
         </div>
     </div>
-
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

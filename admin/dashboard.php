@@ -45,6 +45,9 @@ $conn->close();
         referrerpolicy="origin"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
     <script src="../assets/js/scripts.js"></script>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+
     <!-- Tailwind CSS (Optional, for styling) -->
 
 </head>
@@ -107,7 +110,9 @@ $conn->close();
                                 <ul>
                                     {searchResults.map((result) => (
                                         <li key={result.id}>
-                                            <a href={`/blog/${result.id}`}>{result.title}</a>
+                                            <a className="post-title-link" href={`/blog/${result.id}`}>
+                                                {result.title}
+                                            </a>
                                         </li>
                                     ))}
                                 </ul>
@@ -118,7 +123,6 @@ $conn->close();
                     </div>
 
                     <div className="header-right">
-                        <i className="fas fa-bell notif-bell"></i>
 
                         <button className="btn" onClick={() => setDarkMode(!darkMode)}>
                             {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
@@ -126,7 +130,7 @@ $conn->close();
 
                         <button className="btn" onClick={() => setShowProfileMenu(!showProfileMenu)}>
                             <img src="../uploads/<?php echo $profile_pic; ?>" alt="Profile Picture" className="profile-pic-icon" />
-                            Hi <?php echo $admin_name; ?>
+                            Hi, <?php echo $admin_name; ?>
                         </button>
 
                         <div className={`profile-menu ${showProfileMenu ? "active" : ""}`}>
@@ -194,8 +198,24 @@ $conn->close();
             React.useEffect(() => {
                 fetch('dashboard_content.php')
                     .then(response => response.text())
-                    .then(data => setContent(data));
+                    .then(data => {
+                        setContent(data);
+
+                        // Wait for React to render the content, then execute scripts
+                        setTimeout(() => executeScripts(), 100);
+                    });
             }, []);
+
+            function executeScripts() {
+                const scripts = contentRef.current.querySelectorAll("script");
+
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement("script");
+                    newScript.text = oldScript.text;  // Copy inline script content
+                    document.body.appendChild(newScript);  // Execute script
+                    oldScript.remove();  // Remove old script to avoid duplication
+                });
+            }
 
             return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
         }
@@ -236,6 +256,20 @@ $conn->close();
                 </div>
             );
         }
+
+        function Settings() {
+            const [content, setContent] = React.useState('');
+            const contentRef = React.useRef(null);
+
+            React.useEffect(() => {
+                fetch('settings.php')
+                    .then(response => response.text())
+                    .then(data => setContent(data));
+            }, []);
+
+            return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
+        }
+
 
 
         function ManageComments() {
@@ -398,7 +432,7 @@ $conn->close();
                     content = <Leaderboard />;
                     break;
                 case 'settings':
-                    content = <div>Settings</div>;
+                    content = <Settings />;
                     break;
                 case 'profile':
                     content = <ManageProfile />;
@@ -453,6 +487,30 @@ $conn->close();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fetch data from PHP API
+            fetch("../api/fetch_seo_data.php")
+                .then(response => response.json())  // Convert response to JSON
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error fetching data:", data.error);
+                        document.getElementById("search_traffic").innerText = "Error";
+                        document.getElementById("search_impressions").innerText = "Error";
+                        document.getElementById("total_keywords").innerText = "Error";
+                        document.getElementById("avg_position").innerText = "Error";
+                    } else {
+                        // Update dashboard values
+                        document.getElementById("search_traffic").innerText = data.search_traffic;
+                        document.getElementById("search_impressions").innerText = data.search_impressions;
+                        document.getElementById("total_keywords").innerText = data.total_keywords;
+                        document.getElementById("avg_position").innerText = data.avg_position;
+                    }
+                })
+                .catch(error => console.error("Fetch Error:", error));
+        });
+    </script>
 
 </body>
 
