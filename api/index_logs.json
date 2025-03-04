@@ -1,1 +1,38 @@
-[{"url":"http:\/\/flexymarkets.com\/","service":"Google","status":"error","timestamp":"2025-02-27 14:00:45"}]
+[
+    {
+        "url": "http:\/\/flexymarkets.com\/",
+        "service": "Google",
+        "status": "error",
+        "timestamp": "2025-02-27 14:00:45"
+    },
+    {
+        "url": "http:\/\/flexymarkets.com\/",
+        "service": "Google",
+        "status": "error",
+        "timestamp": "2025-03-04 07:47:40"
+    },
+    {
+        "url": "http:\/\/flexymarkets.com\/",
+        "service": "IndexNow",
+        "status": "error",
+        "timestamp": "2025-03-04 07:57:19"
+    },
+    {
+        "url": "http:\/\/flexymarkets.com\/",
+        "service": "Google",
+        "status": "error",
+        "timestamp": "2025-03-04 07:57:29"
+    },
+    {
+        "url": "http:\/\/flexymarkets.com\/",
+        "service": "IndexNow",
+        "status": "error",
+        "timestamp": "2025-03-04 07:57:44"
+    },
+    {
+        "url": "http:\/\/flexymarkets.com\/",
+        "service": "Google",
+        "status": "error",
+        "timestamp": "2025-03-04 07:58:05"
+    }
+]

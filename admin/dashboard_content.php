@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: ../auth/login.php");
+    exit();
+}
 include '../config/db.php';
 include '../analytics/analytics.php';
 // Fetch SEO Data from the API
@@ -35,6 +40,10 @@ $data = json_decode($response, true);
         .dark-mode {
             background-color: #121212;
             color: #f8f9fa;
+        }
+
+        .dark-mode p {
+            color: #f8f9fa !important;
         }
 
 
@@ -145,6 +154,7 @@ $data = json_decode($response, true);
         </div>
 
         <div class="row mt-5">
+
             <div class="col-md-3 fade-in">
                 <div class="card card_dashboad text-center p-3">
                     <div class="card-body">
@@ -181,6 +191,13 @@ $data = json_decode($response, true);
                     </div>
                 </div>
             </div>
+            <p class="text-muted text-center mt-3" style="font-size: 14px;">
+                📊 Data shown for the last <strong>28 days</strong>. For full analytics, check
+                <a href="https://analytics.google.com/" target="_blank" style="text-decoration: none;">
+                    Google Analytics
+                </a>.
+            </p>
+
         </div>
 
 
@@ -212,7 +229,7 @@ $data = json_decode($response, true);
             }
 
             // Default to 7 days on load
-            fetchSEOData(7);
+            fetchSEOData(28);
 
             // Event listener for date range selection
             document.getElementById("dateRangeSelect").addEventListener("change", function () {

@@ -1,4 +1,10 @@
-<?php include '../api/get_leaderboard.php'; ?>
+<?php 
+session_start();
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: ../auth/login.php");
+    exit();
+}
+include '../api/get_leaderboard.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">

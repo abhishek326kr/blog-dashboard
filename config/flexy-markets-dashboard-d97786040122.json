@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "flexy-markets-dashboard",
+  "private_key_id": "d9778604012266f08c4419f8529a7641154f316b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDjMFlK4viLtv7v\n1pO+Ab0VKnuHEbTA2kfAFQdzhIxm2r8tMYHVk38Vo0loT52KuqWtodksDtfAPml6\nHhKOBEMlbMfvEdL68Gzlt3Wbjjp7bpTQ8779RGO2rAXN+F57d9DPxpFUWuDYIzNG\nVRsLI2i3bzSSW9E30OAQ2Z0ewlk4jGDSmCb8z3vetjAKM71nA8xptUyoqerL429z\nbOHpGyco2TfyiRSvO5injcR+Qzomw9Vfq89N5a2YJW+2zHppl8fY4vH8TM0kZyXW\n6WDPTeOztnkPJPVQMxy5GjhcK6tQLigljCSU3PLYhqvb8E95Wi22cu0Wx/kmaC0b\ncB24SQqXAgMBAAECggEABS4Eayh5NQSrRuz9s1a3NYG7DUPorhjyV9b8gE3xiyRj\nnw31tHJHcuClLmnaR3mku1+146l2+Jzm3lZ/L81TE2OQIpg/PWKfHC57OClQlgdz\nmljKuvWEz65kxEk5LKSsfLNw4gGsbK3oxl3vkhwKXPXkUFq9jps5ii81kNtd5pcc\n9b+o/0R/oL9oSdGmHYJzFQLEDy8HsqvxO7JZjGClfnZVBIK+KPVy4D48nDmyzqkI\nDxc/CZYguzv45bPNR9OBaBhHGUrvysoriNth232RKksMGL8OFaqSMR+xQm24noHI\n0Yuq6Mo4O0jNYCKsEMilMjxT1gVHA44vawxmMlYhUQKBgQD0XlNSaFt3Xlum4aOX\nldtOGPzDOYo9hlLUh3G+naL9t8GbF8u0HHHVNETBlbZC0crAK6V3TjQMT0QiufGJ\n0E6bT4F9L/wO4OMXXoFT92W1t4+vST76ZPjok+xzrhvOrLPRzmkKqKYVSKgj89HH\nd6GorhAJEhwN5pZCCEB0cfWcSQKBgQDuAK/RTYGsXJu8yuQcOs5F3oEvfrMKSTly\n/tSDN6FfFVuva1BmWM8RmE6n9MyXmatY9cevEAtrqkey4apalALjnnCRjVztZFCR\nZTtZEogWtUmjZXuLkYKHZRq4JvSCcjP30B1wICxpJKVL88LwRJ95ijLE6ey+dU8h\nT940IYCv3wKBgQDOI1O+THH7/AjseaL6mFtrQgDW3o8S32C4D5mP5oI77OrQ3f3k\nbapI49KsSpJ5Q2f5O9hVEA8v4x3i/WAXlTT6JtNguz2xf1uRtxL5tdSCudnnT65k\noxClgUMRQmoKqfz2m1xYtXOEuMm9qkvoK66fEFZOkIxB3aYbBcL5d7hsoQKBgQDL\nkH7QsFA3EkaKJacRliKTlAo+i0mrhJHEj71INi6p2uS+lzT/NPp2/CRad4D+MYti\n3WVbkIeUIOKOV4GTU4FdGkkB1T0kNmbK1SD7wGPxuEExpj0TVPOlxo4h7/+2CuP0\nE2b6XipeC9/tpKKZSrh0BgYCcmnxRPjXby6IvBcLVQKBgGlUV77KMVMkcI6cXG/Z\nhDJeeivEWD5+2XLCWIS/m32Gzc4HKW7wWseuXDQ5Y45P5i9BOQm2exbQmCtD9f6T\niZazHQ49VDkf0OYrLmqpWDGgL5+5Q6raexF1mGHJDkTS29WhKWYJaueKTKfal8Il\nMNpvIumhLHku6oLMx2olfQ2P\n-----END PRIVATE KEY-----\n",
+  "client_email": "flexy-markets@flexy-markets-dashboard.iam.gserviceaccount.com",
+  "client_id": "105088152675495841121",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/flexy-markets%40flexy-markets-dashboard.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

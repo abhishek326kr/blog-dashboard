@@ -69,7 +69,7 @@ function getSearchConsoleData($days) {
     ]);
 }
 
-$days = isset($_GET['days']) ? intval($_GET['days']) : 7; // Default to 7 days
+$days = isset($_GET['days']) ? intval($_GET['days']) : 28; // Default to 7 days
 header('Content-Type: application/json');
 echo getSearchConsoleData($days);
 ?>

@@ -386,6 +386,17 @@ $conn->close();
                     .then(data => setContent(data));
             }, []);
 
+            function executeScripts() {
+                const scripts = contentRef.current.querySelectorAll("script");
+
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement("script");
+                    newScript.text = oldScript.text;  // Copy inline script content
+                    document.body.appendChild(newScript);  // Execute script
+                    oldScript.remove();  // Remove old script to avoid duplication
+                });
+            }
+
             return <div dangerouslySetInnerHTML={{ __html: content }} />;
         }
 

@@ -4,33 +4,29 @@ session_start();
 include '../config/db.php';
 
 
-// If the user is an editor, show a message and stop further execution
-if ($_SESSION['role'] === 'editor') {
-    echo "<h2 style='color: red; text-align: center; margin-top: 20px;'>You don't have access to view this page.</h2>";
-    exit(); // Stop further execution
-}
 
-// Continue with admin-specific operations
+// Fetch all admin users
 $query = "SELECT * FROM admins";
 $result = $conn->query($query);
 $users = $result->fetch_all(MYSQLI_ASSOC);
 
-
 // Handle role assignment
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_role'])) {
-    $user_id = $_POST['user_id'];
-    $role = $_POST['role'];
+    $user_id = intval($_POST['user_id']);
+    $role = trim($_POST['role']);
 
-    $update_query = "UPDATE admins SET role = ? WHERE id = ?";
-    $stmt = $conn->prepare($update_query);
-    $stmt->bind_param("si", $role, $user_id);
-
-    if ($stmt->execute()) {
-        $success_message = "Role updated successfully!";
-    } else {
-        $error_message = "Failed to update role.";
+    if (in_array($role, ['admin', 'editor'])) {
+        $update_query = "UPDATE admins SET role = ? WHERE id = ?";
+        $stmt = $conn->prepare($update_query);
+        $stmt->bind_param("si", $role, $user_id);
+        
+        if ($stmt->execute()) {
+            $success_message = "Role updated successfully!";
+        } else {
+            $error_message = "Failed to update role.";
+        }
+        $stmt->close();
     }
-    $stmt->close();
 }
 
 // Handle creating new admin/editor
@@ -41,24 +37,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
     $phone = trim($_POST['phone']);
     $password = trim($_POST['password']);
     $role = trim($_POST['role']);
-    $profile_pic = "default.jpg"; // Default profile picture
+    $profile_pic = "default.jpg";
 
-    // Hash the password
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    if (in_array($role, ['admin', 'editor'])) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insert new user into the database
-    $insert_query = "INSERT INTO admins (name, email, username, phone, password, role, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($insert_query);
-    $stmt->bind_param("sssssss", $name, $email, $username, $phone, $hashed_password, $role, $profile_pic);
+        $insert_query = "INSERT INTO admins (name, email, username, phone, password, role, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($insert_query);
+        $stmt->bind_param("sssssss", $name, $email, $username, $phone, $hashed_password, $role, $profile_pic);
 
-    if ($stmt->execute()) {
-        $success_message = "User created successfully!";
-    } else {
-        $error_message = "Failed to create user.";
+        if ($stmt->execute()) {
+            $success_message = "User created successfully!";
+        } else {
+            $error_message = "Failed to create user.";
+        }
+        $stmt->close();
     }
-    $stmt->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 

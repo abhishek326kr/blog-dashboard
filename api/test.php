@@ -18,17 +18,11 @@ if (!isset($_SESSION['csrf_token'])) {
 
 $config = [
     'google_credentials' => '../config/flexy-markets-dashboard-d97786040122.json',
-    'indexnow_endpoint' => 'https://www.bing.com/indexnow',
+    'indexnow_endpoint' => 'https://api.indexnow.org/indexnow',
     'indexnow_host' => 'flexymarkets.com',
     'indexnow_key' => '897169635ae248e6b4b59f0e306f6b3f',
     'log_file' => '../logs/index_logs.json'
 ];
-
-// Load logs from the log file (if it exists)
-$logs = file_exists($config['log_file']) ? json_decode(file_get_contents($config['log_file']), true) : [];
-if (!is_array($logs)) {
-    $logs = []; // Ensure $logs is always an array
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
@@ -76,12 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        // Handle IndexNow response
-        $indexNowStatus = [
-            'http_code' => $httpCode,
-            'response' => $indexNowResponse
-        ];
-
         if ($httpCode !== 200) {
             throw new RuntimeException("IndexNow API request failed with HTTP code $httpCode: $indexNowResponse");
         }
@@ -91,10 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'url' => $url,
             'timestamp' => date('c'),
             'google_status' => 'Success',
-            'indexnow_status' => $indexNowStatus // Log the full IndexNow response
+            'indexnow_status' => json_decode($indexNowResponse, true) ?: $indexNowResponse
         ];
 
-        array_unshift($logs, $logEntry); // Add the new log entry to the beginning of the array
+        $logs = file_exists($config['log_file']) ? json_decode(file_get_contents($config['log_file']), true) : [];
+        if (!is_array($logs)) {
+            $logs = [];
+        }
+        array_unshift($logs, $logEntry);
         file_put_contents($config['log_file'], json_encode($logs, JSON_PRETTY_PRINT));
 
         echo json_encode([
@@ -119,8 +111,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
-?>
 
+$logs = file_exists($config['log_file']) ? json_decode(file_get_contents($config['log_file']), true) : [];
+if (!is_array($logs)) {
+    $logs = [];
+}
+?>
 
 
 <!DOCTYPE html>
@@ -135,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            background: linear-gradient(135deg,rgb(255, 255, 255) 0%,rgb(50, 97, 70) 100%);
             min-height: 100vh;
         }
 
@@ -216,22 +212,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td><?= date('M j, Y H:i', strtotime($log['timestamp'])) ?></td>
                                     <td><span class="badge bg-success bg-opacity-10 text-success">Success</span></td>
                                     <td>
-                                        <?php if (isset($log['indexnow_status'])): ?>
-                                            <?php if (is_array($log['indexnow_status'])): ?>
-                                                <span
-                                                    class="badge <?= ($log['indexnow_status']['http_code'] === 200) ? 'bg-success' : 'bg-danger' ?> bg-opacity-10 text-success">
-                                                    HTTP <?= $log['indexnow_status']['http_code'] ?>:
-                                                    <?= htmlspecialchars($log['indexnow_status']['response']) ?>
-                                                    Success
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="badge bg-warning bg-opacity-10 text-warning">
-                                                    <?= htmlspecialchars($log['indexnow_status']) ?>
-                                                </span>
-                                            <?php endif; ?>
+                                        <?php if (is_array($log['indexnow_status'])): ?>
+                                            <span class="badge bg-success bg-opacity-10 text-success">
+                                                <?= htmlspecialchars($log['indexnow_status']['message'] ?? 'Success') ?>
+                                            </span>
                                         <?php else: ?>
-                                            <span class="badge bg-secondary bg-opacity-10 text-secondary">
-                                                No Status
+                                            <span class="badge bg-success bg-opacity-10 text-success">
+                                                <?= htmlspecialchars($log['indexnow_status']) ?>
                                             </span>
                                         <?php endif; ?>
                                     </td>
@@ -250,18 +237,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function () {
-    $('#logsTable').DataTable({
-        paging: true, // Enable Pagination
-        pageLength: 5, // Set the number of rows per page
-        lengthMenu: [10, 25, 50, 100], // Dropdown for selecting number of rows per page
-        order: [[1, 'desc']], // Sort by timestamp in descending order
-        columnDefs: [
-            { targets: 0, width: '40%' },
-            { targets: 1, width: '20%' },
-            { targets: [2, 3], width: '15%' }
-        ]
-    });
-});
+            $('#logsTable').DataTable({
+                order: [[1, 'desc']],
+                columnDefs: [
+                    { targets: 0, width: '40%' },
+                    { targets: 1, width: '20%' },
+                    { targets: [2, 3], width: '15%' }
+                ]
+            });
+        });
 
         $('#submitForm').submit(async function (e) {
             e.preventDefault();

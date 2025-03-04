@@ -86,19 +86,19 @@ function ManageProfile() {
   return (
     <div className="flex h-screen bg-gradient-to-r from-blue-50 to-purple-50 h-full">
       {/* Sidebar */}
-        <div className="w-1/4 bg-gradient-to-b from-[#17423C] to-[#0d2926] text-white p-6 flex flex-col items-center shadow-lg h-full">
-          <h2 className="text-2xl font-bold mb-4">Profile</h2>
-          <img
-            src={imagePreview}
-            alt="Profile"
-            style={{ width: "250px", height: "250px" }}
-            className="rounded-full border-4 border-white object-cover shadow-lg hover:scale-105 transition-transform duration-300"
-          />
-          <p className="mt-4 text-xl font-semibold">{user.name}</p>
-          <p className="text-md">{user.username}</p>
-        </div>
+      <div className="w-1/4 bg-gradient-to-b from-[#17423C] to-[#0d2926] text-white p-6 flex flex-col items-center shadow-lg h-full">
+        <h2 className="text-2xl font-bold mb-4">Profile</h2>
+        <img
+          src={imagePreview}
+          alt="Profile"
+          style={{ width: "250px", height: "250px" }}
+          className="rounded-full border-4 border-white object-cover shadow-lg hover:scale-105 transition-transform duration-300"
+        />
+        <p className="mt-4 text-xl font-semibold">{user.name}</p>
+        <p className="text-md">{user.username}</p>
+      </div>
 
-        {/* Main Content */}
+      {/* Main Content */}
       <div className="w-3/4 p-6">
         <h3 className="text-2xl font-bold mb-6 text-gray-800">
           Manage Profile
@@ -137,6 +137,18 @@ function ManageProfile() {
               type="text"
               name="username"
               defaultValue={user.username}
+              required
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              defaultValue={user.email}
               required
               className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
