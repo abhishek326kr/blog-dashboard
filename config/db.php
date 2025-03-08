@@ -1,7 +1,7 @@
 <?php
 $host = "localhost"; 
 $username = "root";  // Hostinger pe "root" nahi hoga, waha jo hostinger ka diya hoga wo dalna
-$password = "StrongP@ssw0rd!";
+$password = "";
 $database = "blog_dashboard";
 
 // Database Connection

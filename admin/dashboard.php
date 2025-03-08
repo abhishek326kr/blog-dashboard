@@ -41,8 +41,8 @@ $conn->close();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://cdn.tiny.cloud/1/xdzl24i0eyx673s1ukp65dwkobc1sj0foqjxgtj7fewqh0gc/tinymce/6/tinymce.min.js"
-        referrerpolicy="origin"></script>
+    <script src="../config/tinymce/js/tinymce/tinymce.min.js"
+    referrerpolicy="origin"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
     <script src="../assets/js/scripts.js"></script>
 
